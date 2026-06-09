@@ -7,9 +7,9 @@ const Hero = () => {
   const y = useScrollY();
 
   return (
-    <header style={{
+    <header id="top" style={{
       position: "relative", overflow: "hidden",
-      minHeight: 880, background: "#C9A77E",
+      minHeight: "clamp(560px, 92vh, 880px)", background: "#C9A77E",
     }}>
       {/* Photo background — parallax: moves slower than scroll */}
       <div style={{
@@ -62,34 +62,9 @@ const Hero = () => {
 
       <SurveyGrid/>
 
-      {/* Top-left marginalia */}
-      <div style={{
-        position: "absolute", top: 32, left: 48,
-        fontFamily: "var(--font-code)", fontSize: 10.5,
-        letterSpacing: "0.18em", color: "var(--sand-700)",
-        textTransform: "uppercase", display: "flex", gap: 18,
-      }}>
-        <span>PLANCHE&nbsp;·&nbsp;01</span>
-        <span style={{ color: "var(--mirage-700)" }}>m[ai]ge / specimen</span>
-      </div>
-
-      {/* Bottom-left build stamp only — no extra spec cells under headline */}
-      <div style={{
-        position: "absolute", bottom: 32, left: 48,
-        fontFamily: "var(--font-code)", fontSize: 10.5,
-        letterSpacing: "0.04em", color: "var(--sand-700)",
-        display: "flex", gap: 22, alignItems: "center",
-      }}>
-        <span>v&nbsp;0.3</span>
-        <span style={{ width: 24, height: 1, background: "var(--sand-500)" }}/>
-        <span>post stress-test</span>
-        <span style={{ width: 24, height: 1, background: "var(--sand-500)" }}/>
-        <span>OVH-GRA11</span>
-      </div>
-
-      <div style={{
+      <div className="mg-pad" style={{
         position: "relative", zIndex: 2,
-        padding: "180px 48px 140px",
+        padding: "clamp(120px, 18vh, 180px) 48px clamp(80px, 12vh, 140px)",
         maxWidth: 1280, margin: "0 auto",
       }}>
         <div style={{
@@ -104,7 +79,7 @@ const Hero = () => {
         <h1 style={{
           marginTop: 28,
           fontFamily: '"Rajdhani", sans-serif', fontWeight: 300,
-          fontSize: 128, lineHeight: 0.96, letterSpacing: "0.02em",
+          fontSize: "clamp(40px, 11vw, 128px)", lineHeight: 0.96, letterSpacing: "0.02em",
           color: "var(--sand-900)", textWrap: "balance",
           maxWidth: 1180,
           mixBlendMode: "multiply",
@@ -118,7 +93,7 @@ const Hero = () => {
           </em>
         </h1>
 
-        <div style={{ display: "flex", gap: 14, marginTop: 72,
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 72,
                       transform: `translate3d(0, ${y * -0.18}px, 0)`,
                       willChange: "transform" }}>
           <a href="#invitation" style={{
@@ -126,20 +101,12 @@ const Hero = () => {
             color: "var(--sand-50)", background: "var(--sand-900)",
             padding: "14px 26px", borderRadius: 4,
             textDecoration: "none", letterSpacing: "0.04em",
-          }}>Demander la démo —&gt;</a>
-          <a href="#whitepaper" style={{
-            fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13,
-            color: "var(--sand-900)", background: "rgba(247,241,230,0.55)",
-            backdropFilter: "blur(2px)",
-            border: "1px solid var(--line-3)",
-            padding: "14px 26px", borderRadius: 4,
-            textDecoration: "none", letterSpacing: "0.04em",
-          }}>Lire le whitepaper</a>
+          }}>Nous contacter →</a>
         </div>
       </div>
 
       {/* scroll cue */}
-      <div style={{
+      <div className="mg-marginalia" style={{
         position: "absolute", bottom: 32, right: 48,
         fontFamily: "var(--font-code)", fontSize: 10.5,
         letterSpacing: "0.22em", color: "var(--sand-700)",

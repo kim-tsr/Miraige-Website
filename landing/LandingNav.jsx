@@ -1,42 +1,35 @@
 /* eslint-disable react/prop-types */
-/* LandingNav — minimal: wordmark + 2 utility links + the build stamp. */
+/* LandingNav — responsive: wordmark + contact + console redirect. */
 
 const LandingNav = () => (
-  <nav style={{
+  <nav className="mg-pad" style={{
     position: "sticky", top: 0, zIndex: 50,
-    display: "grid", gridTemplateColumns: "auto 1fr auto auto",
-    alignItems: "center", gap: 28,
-    padding: "20px 48px",
+    display: "flex", alignItems: "center", justifyContent: "space-between",
+    gap: 20,
+    padding: "16px 48px",
     background: "rgba(247, 241, 230, 0.86)",
     backdropFilter: "blur(10px)",
     borderBottom: "1px solid var(--line-1)",
   }}>
-    <span style={{
+    <a href="#top" style={{
       fontFamily: '"Syncopate", sans-serif', fontWeight: 700,
       fontSize: 14, letterSpacing: "0.18em", color: "var(--sand-900)",
+      textDecoration: "none",
     }}>
       MIR<span style={{ color: "var(--mirage-500)" }}>[</span>
       AI
       <span style={{ color: "var(--mirage-500)" }}>]</span>GE
-    </span>
-    <span/>
-    <span style={{
-      fontFamily: "var(--font-code)", fontSize: 10.5,
-      letterSpacing: "0.18em", textTransform: "uppercase",
-      color: "var(--fg-3)",
-    }}>
-      v 0.1 · pré-démo
-    </span>
+    </a>
     <div style={{
       display: "flex", gap: 22, alignItems: "center",
       fontFamily: "var(--font-ui)", fontWeight: 500,
       fontSize: 11.5, letterSpacing: "0.22em", textTransform: "uppercase",
     }}>
-      <a href="#whitepaper" style={{ color: "var(--fg-2)", textDecoration: "none" }}>Whitepaper</a>
-      <a href="/demo/" style={{
+      <a href="#invitation" style={{ color: "var(--fg-2)", textDecoration: "none" }}>Contact</a>
+      <a href="/console/" style={{
         color: "var(--sand-50)", background: "var(--sand-900)",
         padding: "8px 14px", borderRadius: 4, textDecoration: "none",
-      }}>Démo live —&gt;</a>
+      }}>Console —&gt;</a>
     </div>
   </nav>
 );

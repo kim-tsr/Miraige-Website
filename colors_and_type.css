@@ -251,3 +251,51 @@ code, .code, kbd, samp {
 /* The horizon line — a 1px hairline used as a section divider */
 .horizon { height: 1px; background: linear-gradient(90deg,
    transparent 0%, var(--line-2) 8%, var(--line-2) 92%, transparent 100%); }
+
+
+/* ==========================================================================
+   Responsive — mobile-first overrides.
+   The landing components set their desktop layout via inline styles, so the
+   mobile rules below carry !important to win against inline specificity.
+   Layout hooks are added as classes (mg-*); display type uses clamp() inline.
+   ========================================================================== */
+
+/* Kill horizontal scroll from full-bleed parallax / negative-inset layers. */
+html, body { overflow-x: hidden; max-width: 100%; }
+img, svg { max-width: 100%; }
+
+@media (max-width: 920px) {
+  /* Section gutters shrink on small screens. */
+  .mg-pad { padding-left: 20px !important; padding-right: 20px !important; }
+
+  /* Any two-column editorial grid collapses to a single column. */
+  .mg-stack { grid-template-columns: 1fr !important; gap: 40px !important; }
+
+  /* Same, but for bordered/dark panels that must not show a gap. */
+  .mg-stack-tight { grid-template-columns: 1fr !important; gap: 0 !important; }
+
+  /* Sticky side columns stop being sticky once stacked. */
+  .mg-unstick { position: static !important; top: auto !important; }
+
+  /* Primitives rows: drop the fixed number/marginalia columns into a stack. */
+  .mg-prim-row { grid-template-columns: 1fr !important; gap: 22px !important; }
+
+  /* Field readings: 3 cols → 2 cols. */
+  .mg-readings { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
+
+  /* Corner marginalia (§ labels, build stamps, scroll cue) just clutter phones. */
+  .mg-marginalia { display: none !important; }
+
+  /* The fixed right-rail chapter index needs room it doesn't have on mobile. */
+  .mg-chapter-rail { display: none !important; }
+
+  /* Field-readings footer meta wraps instead of overflowing. */
+  .mg-wrap { flex-wrap: wrap !important; gap: 12px 28px !important; }
+}
+
+@media (max-width: 560px) {
+  .mg-pad { padding-left: 16px !important; padding-right: 16px !important; }
+  .mg-readings { grid-template-columns: 1fr !important; }
+  /* Stack the big pull-quote mark above its text. */
+  .mg-quote { grid-template-columns: 1fr !important; gap: 8px !important; }
+}

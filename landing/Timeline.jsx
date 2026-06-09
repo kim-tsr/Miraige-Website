@@ -54,13 +54,13 @@ const TLStep = ({ t, ms, title, body, color, alert }) => (
 );
 
 const Timeline = () => (
-  <section
+  <section className="mg-pad"
     style={{
       padding: "120px 48px", maxWidth: 1080, margin: "0 auto",
     }}
   >
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 80, alignItems: "start" }}>
-      <div style={{ position: "sticky", top: 100 }}>
+    <div className="mg-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 80, alignItems: "start" }}>
+      <div className="mg-unstick" style={{ position: "sticky", top: 100 }}>
         <div
           style={{
             fontFamily: "var(--font-ui)", fontWeight: 500,
@@ -73,18 +73,19 @@ const Timeline = () => (
         <h2
           style={{
             margin: 0, fontFamily: '"Rajdhani", sans-serif', fontWeight: 400,
-            fontSize: 56, lineHeight: 1.05, letterSpacing: "0.02em",
+            fontSize: "clamp(30px, 5.5vw, 56px)", lineHeight: 1.05, letterSpacing: "0.02em",
             color: "var(--fg-1)",
           }}
         >
-          2,94&nbsp;s entre <em style={{ fontStyle: "normal", color: "var(--mirage-700)" }}>détection</em> et <em style={{ fontStyle: "normal", color: "var(--mirage-700)" }}>engagement</em>.
+          ≈&nbsp;3&nbsp;s entre <em style={{ fontStyle: "normal", color: "var(--mirage-700)" }}>détection</em> et <em style={{ fontStyle: "normal", color: "var(--mirage-700)" }}>engagement</em>.
         </h2>
         <p style={{
           marginTop: 24, fontSize: 16, lineHeight: 1.6, color: "var(--fg-2)",
         }}>
-          Mesuré sur l'incident <code style={{
+          Le chemin critique, étape par étape : cascade de détection <code style={{
             fontFamily: "var(--font-code)", color: "var(--mirage-700)", fontSize: 14,
-          }}>inc-0094</code> · 3 juin 2026 · région OVHcloud GRA11 · attaquant LangChain ReAct.
+          }}>T0 → T2</code>, signature A2A, puis un seul PATCH L7 sur Octavia.
+          Agent LLM ReAct, mesuré en lab.
         </p>
       </div>
 
@@ -129,7 +130,7 @@ const Timeline = () => (
         <TLStep
           t="19:42:11.050" ms="2,94 s"
           title="L7 PATCH Octavia"
-          body="Règle HEADER X-Forwarded-For STARTS_WITH 198.51.100. → REDIRECT_TO_POOL=ghost_shell. Engagement actif. TTL 30 min. L'attaquant brûle 23× notre compute."
+          body="Règle L7 sur la session signée → REDIRECT vers ghost_shell. Engagement actif, TTL 30 min. Sur la campagne, l'attaquant brûle ×19,2 le compute qu'on dépense à le leurrer."
           color="var(--mirage-500)"
         />
       </div>

@@ -3,7 +3,7 @@
    Each primitive is a numbered editorial section with marginalia. */
 
 const PrimRow = ({ num, tag, name, lede, mcp, accent, glyph, side = "right" }) => (
-  <article style={{
+  <article className="mg-prim-row" style={{
     position: "relative",
     padding: "56px 0", borderTop: "1px solid var(--line-2)",
     display: "grid", gridTemplateColumns: "96px 1fr 320px",
@@ -30,7 +30,7 @@ const PrimRow = ({ num, tag, name, lede, mcp, accent, glyph, side = "right" }) =
       <h3 style={{
         margin: 0,
         fontFamily: '"Rajdhani", sans-serif', fontWeight: 500,
-        fontSize: 52, lineHeight: 1.05, letterSpacing: "0.02em",
+        fontSize: "clamp(30px, 5vw, 52px)", lineHeight: 1.05, letterSpacing: "0.02em",
         color: "var(--fg-1)",
       }}>
         {name}
@@ -72,14 +72,14 @@ const PrimRow = ({ num, tag, name, lede, mcp, accent, glyph, side = "right" }) =
 );
 
 const Primitives = () => (
-  <section style={{
+  <section className="mg-pad" style={{
     position: "relative",
     background: "var(--sand-100)",
     borderTop: "1px solid var(--line-2)",
     borderBottom: "1px solid var(--line-2)",
     padding: "120px 48px",
   }}>
-    <div style={{
+    <div className="mg-marginalia" style={{
       position: "absolute", top: 60, right: 48,
       fontFamily: "var(--font-code)", fontSize: 10.5,
       letterSpacing: "0.22em", color: "var(--fg-3)",
@@ -100,7 +100,7 @@ const Primitives = () => (
       <h2 style={{
         margin: "0 0 32px", maxWidth: 980,
         fontFamily: '"Rajdhani", sans-serif', fontWeight: 400,
-        fontSize: 60, lineHeight: 1.05, letterSpacing: "0.02em",
+        fontSize: "clamp(30px, 6vw, 60px)", lineHeight: 1.05, letterSpacing: "0.02em",
         color: "var(--fg-1)", textWrap: "balance",
       }}>
         Rien d'exotique en isolation. Tout réside dans <em style={{ fontStyle: "normal", color: "var(--mirage-700)" }}>leur composition</em>.
@@ -110,9 +110,9 @@ const Primitives = () => (
         <PrimRow
           num="01"
           tag="Protocole agent · HMAC-SHA256"
-          name="A2A — Agent à Agent"
+          name="A2A · Agent à Agent"
           accent="var(--mirage-700)"
-          lede="Sentinel et Orchestrator communiquent via HMAC-SHA256 (stand-in JWS RFC 7515 spec A2A v1.2 Linux Foundation). Frontière cryptographique réelle — un Sentinel compromis ne peut invoquer l'API OVH directement. Audit natif au protocole."
+          lede="Sentinel et Orchestrator communiquent via HMAC-SHA256 (stand-in du JWS RFC 7515 de la spec A2A v1.2, Linux Foundation). C'est une vraie frontière cryptographique : un Sentinel compromis ne peut pas invoquer l'API OVH directement. L'audit est natif au protocole."
           glyph={
             <svg width="20" height="20" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4">
               <circle cx="8" cy="16" r="3"/><circle cx="24" cy="16" r="3"/>
@@ -125,9 +125,9 @@ const Primitives = () => (
         <PrimRow
           num="02"
           tag="Délégation infra · scoped sécurité"
-          name="MCP — OVHcloud Octavia"
+          name="MCP · OVHcloud Octavia"
           accent="var(--sand-700)"
-          lede="Mir[AI]ge complète le MCP officiel OVHcloud (labs.ovhcloud.com) comme consumer cyber-spécifique. Tools allowlistés, IAM token fresh par appel, validation aud claim JWT — adresse les 30+ CVEs MCP de 2026."
+          lede="L'Orchestrateur ne pousse pas du Terraform : il appelle trois outils MCP scopés (rerouter, engager, libérer). Tools allowlistés, token IAM frais par appel, validation du claim aud. On durcit le maillon faible des stacks agentiques au lieu de l'ouvrir."
           glyph={
             <svg width="20" height="20" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4">
               <rect x="4" y="11" width="24" height="14" rx="1.5"/>
@@ -144,7 +144,7 @@ const Primitives = () => (
           tag="Leurre procédural · 5 €/mois"
           name="Ghost Shell"
           accent="var(--signal-ghost)"
-          lede="UN seul container présente l'illusion d'un SI complet via persona routing (Host header). Path-seeded RNG + Mimesis 30 MB/s par vCPU + reverse PI canary. On ne clone pas — on génère en O(n), l'attaquant lit en O(n²)."
+          lede="UN seul container présente l'illusion d'un SI complet via persona routing (Host header). Path-seeded RNG + Mimesis 30 MB/s par vCPU + reverse PI canary. On ne clone pas : on génère en O(n), l'attaquant lit en O(n²)."
           glyph={
             <svg width="20" height="20" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeDasharray="3 2">
               <rect x="5" y="5" width="22" height="22"/>
@@ -152,7 +152,7 @@ const Primitives = () => (
               <line x1="22" y1="10" x2="10" y2="22"/>
             </svg>
           }
-          mcp={`session s_x9k2 engaged\n  persona: portal_ovh\n  netns: isolated\n  tls_jarm: distinct\n  attacker_tokens: 28 400\n  our_cost: 0.002 €\n→ asymmetric_ratio: 23×`}
+          mcp={`campagne · 30 agents × 1 h\n  servi  (O(n)):    926 k tok\n  brûlé  (O(n²)): 17,8 M tok\n  notre coût:     ~0,002 €\n  leur coût OVH:    6,58 €\n→ amplification: ×19,2`}
         />
         <div style={{ borderTop: "1px solid var(--line-2)" }}/>
       </div>
