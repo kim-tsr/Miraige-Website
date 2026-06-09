@@ -1,0 +1,253 @@
+/* ==========================================================================
+   MIR[AI]GE — colors_and_type.css
+   Sand, horizon, mirage. Telemetry over a desert at dusk.
+   ========================================================================== */
+
+/* ---- Fonts -------------------------------------------------------------- */
+
+@font-face { font-family: "Rajdhani"; font-weight: 300; font-display: swap;
+  src: url("fonts/Rajdhani-300.woff2") format("woff2"); }
+@font-face { font-family: "Rajdhani"; font-weight: 400; font-display: swap;
+  src: url("fonts/Rajdhani-400.woff2") format("woff2"); }
+@font-face { font-family: "Rajdhani"; font-weight: 500; font-display: swap;
+  src: url("fonts/Rajdhani-500.woff2") format("woff2"); }
+@font-face { font-family: "Rajdhani"; font-weight: 600; font-display: swap;
+  src: url("fonts/Rajdhani-600.woff2") format("woff2"); }
+@font-face { font-family: "Rajdhani"; font-weight: 700; font-display: swap;
+  src: url("fonts/Rajdhani-700.woff2") format("woff2"); }
+
+@font-face { font-family: "Syncopate"; font-weight: 400; font-display: swap;
+  src: url("fonts/Syncopate-400.woff2") format("woff2"); }
+@font-face { font-family: "Syncopate"; font-weight: 700; font-display: swap;
+  src: url("fonts/Syncopate-700.woff2") format("woff2"); }
+
+@font-face { font-family: "Space Grotesk"; font-weight: 400; font-display: swap;
+  src: url("fonts/SpaceGrotesk-400.woff2") format("woff2"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 500; font-display: swap;
+  src: url("fonts/SpaceGrotesk-500.woff2") format("woff2"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 600; font-display: swap;
+  src: url("fonts/SpaceGrotesk-600.woff2") format("woff2"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 700; font-display: swap;
+  src: url("fonts/SpaceGrotesk-700.woff2") format("woff2"); }
+
+@font-face { font-family: "Titillium Web"; font-weight: 400; font-display: swap;
+  src: url("fonts/TitilliumWeb-400.woff2") format("woff2"); }
+@font-face { font-family: "Titillium Web"; font-weight: 600; font-display: swap;
+  src: url("fonts/TitilliumWeb-600.woff2") format("woff2"); }
+@font-face { font-family: "Titillium Web"; font-weight: 700; font-display: swap;
+  src: url("fonts/TitilliumWeb-700.woff2") format("woff2"); }
+
+@font-face { font-family: "Fira Code"; font-weight: 400; font-display: swap;
+  src: url("fonts/FiraCode-400.woff2") format("woff2"); }
+@font-face { font-family: "Fira Code"; font-weight: 500; font-display: swap;
+  src: url("fonts/FiraCode-500.woff2") format("woff2"); }
+@font-face { font-family: "Fira Code"; font-weight: 600; font-display: swap;
+  src: url("fonts/FiraCode-600.woff2") format("woff2"); }
+
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-display: swap;
+  src: url("fonts/JetBrainsMono-400.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 500; font-display: swap;
+  src: url("fonts/JetBrainsMono-500.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 700; font-display: swap;
+  src: url("fonts/JetBrainsMono-700.woff2") format("woff2"); }
+
+
+:root {
+
+  /* ---- Color: sand foundation -----------------------------------------
+     Warm, paper-like neutrals. These read as "the desert floor" — daytime
+     on the lightest, dusk on the deeper. Used for surfaces, cards, panels. */
+
+  --sand-50:  #F7F1E6;   /* bone — lightest paper */
+  --sand-100: #EFE5D2;   /* parchment */
+  --sand-200: #E4D4B5;   /* dune light */
+  --sand-300: #D4BE92;   /* dune mid (the brand neutral) */
+  --sand-400: #B89E72;   /* sand shadow */
+  --sand-500: #8C7651;   /* dry earth */
+  --sand-600: #5E4E36;   /* sienna deep */
+  --sand-700: #3A2F20;   /* coffee */
+  --sand-800: #221B11;   /* dusk earth */
+  --sand-900: #0F0B05;   /* night sand — near-black */
+
+  /* ---- Color: mirage accent -------------------------------------------
+     The single cool shimmer in the warm world. Pale, slightly green-tinted
+     cyan that reads as "heat over asphalt" or "false water on horizon".
+     USE SPARINGLY. One element per view. */
+
+  --mirage-100: #DCEFE8;   /* faint shimmer wash */
+  --mirage-300: #8EC9BC;   /* mirage line */
+  --mirage-500: #4FA08F;   /* mirage core — interactive */
+  --mirage-700: #2C6E62;   /* mirage deep — pressed/visited */
+
+  /* ---- Color: telemetry / status -------------------------------------- */
+
+  --signal-ok:    #6B8E3D;   /* operational — olive, not green */
+  --signal-watch: #C99441;   /* watch — warm amber */
+  --signal-alert: #B0432C;   /* threat — burnt sienna red */
+  --signal-ghost: #7C6FA8;   /* Ghost Net — dim violet (the decoy) */
+
+  /* ---- Semantic surfaces ---------------------------------------------- */
+
+  --bg:        var(--sand-50);    /* default page */
+  --bg-deep:   var(--sand-900);   /* mission console */
+  --bg-panel:  #FBF7EE;            /* raised paper */
+  --bg-sunk:   var(--sand-100);   /* recessed / input */
+  --bg-deep-panel: #15110A;       /* dark panel inside console */
+  --bg-deep-sunk:  #050300;       /* deepest, almost black */
+
+  /* ---- Semantic foreground ------------------------------------------- */
+
+  --fg-1: var(--sand-900);   /* primary text on light */
+  --fg-2: var(--sand-700);   /* secondary text */
+  --fg-3: var(--sand-500);   /* tertiary / meta */
+  --fg-mute: var(--sand-400);
+
+  --fg-on-deep-1: var(--sand-100);
+  --fg-on-deep-2: var(--sand-300);
+  --fg-on-deep-3: var(--sand-400);
+
+  /* ---- Borders / lines (the "survey marker" line system) ------------- */
+
+  --line-1: rgba(58, 47, 32, 0.14);   /* hairline on sand */
+  --line-2: rgba(58, 47, 32, 0.28);   /* divider */
+  --line-3: rgba(58, 47, 32, 0.55);   /* emphatic, technical */
+  --line-on-deep-1: rgba(228, 212, 181, 0.10);
+  --line-on-deep-2: rgba(228, 212, 181, 0.22);
+  --line-on-deep-3: rgba(228, 212, 181, 0.45);
+
+  /* ---- Type families -------------------------------------------------- */
+
+  --font-display:  "Rajdhani", "Space Grotesk", system-ui, sans-serif;
+  --font-wordmark: "Syncopate", "Rajdhani", system-ui, sans-serif;
+  --font-ui:       "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-data:     "Titillium Web", "Space Grotesk", system-ui, sans-serif;
+  --font-code:     "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  --font-ligature: "Fira Code", "JetBrains Mono", ui-monospace, monospace;
+
+  /* ---- Type scale ---------------------------------------------------- */
+
+  --t-display:   clamp(48px, 6.4vw, 84px);   /* hero */
+  --t-h1:        40px;
+  --t-h2:        28px;
+  --t-h3:        20px;
+  --t-body:      15px;
+  --t-small:     13px;
+  --t-meta:      11px;
+  --t-code:      13px;
+
+  --lh-tight:    1.08;
+  --lh-snug:     1.25;
+  --lh-body:     1.55;
+  --lh-mono:     1.5;
+
+  /* The wordmark and section headers carry a strong tracking — this is
+     the "desert horizon" feel. Body and data use normal tracking. */
+  --tr-wordmark: 0.32em;
+  --tr-display:  0.04em;
+  --tr-section:  0.18em;   /* uppercase eyebrow labels */
+  --tr-body:     0;
+  --tr-mono:     0;
+
+  /* ---- Spacing (a 4 / 6 hybrid — survey grid) ------------------------ */
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+
+  /* ---- Radii (low; sand doesn't curve much) ------------------------- */
+
+  --r-0:    0px;
+  --r-1:    2px;
+  --r-2:    4px;
+  --r-3:    8px;
+  --r-pill: 999px;
+
+  /* ---- Elevation — extremely restrained.
+         Light side: a single warm sand shadow.
+         Dark side: a faint mirage glow. ------------------------------- */
+
+  --elev-1: 0 1px 0 rgba(58, 47, 32, 0.04), 0 1px 2px rgba(58, 47, 32, 0.08);
+  --elev-2: 0 2px 4px rgba(58, 47, 32, 0.06), 0 8px 24px -8px rgba(58, 47, 32, 0.18);
+  --elev-3: 0 12px 32px -8px rgba(58, 47, 32, 0.24);
+  --elev-deep-1: 0 0 0 1px rgba(228, 212, 181, 0.06), 0 1px 0 rgba(255, 255, 255, 0.02) inset;
+  --elev-deep-2: 0 8px 32px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(228,212,181,0.08);
+
+  /* Mirage glow — for the single "active agent" or "live shimmer" element */
+  --glow-mirage: 0 0 0 1px rgba(79, 160, 143, 0.35),
+                 0 0 24px -4px rgba(79, 160, 143, 0.45);
+
+  /* ---- Motion -------------------------------------------------------- */
+
+  --ease-out:   cubic-bezier(0.2, 0.7, 0.2, 1);     /* sand-settle */
+  --ease-in:    cubic-bezier(0.6, 0.0, 0.85, 0.3);
+  --ease-shim:  cubic-bezier(0.4, 0.0, 0.2, 1);     /* shimmer */
+
+  --d-fast: 120ms;
+  --d-base: 220ms;
+  --d-slow: 480ms;
+  --d-shim: 1800ms;   /* the mirage shimmer cycle */
+
+  /* ---- The signature: heat-haze gradient ----------------------------- */
+
+  --heat-haze: linear-gradient(
+      180deg,
+      rgba(247, 241, 230, 0) 0%,
+      rgba(142, 201, 188, 0.18) 48%,
+      rgba(247, 241, 230, 0) 52%,
+      rgba(247, 241, 230, 0) 100%
+  );
+
+  /* Sand-paper texture overlay (CSS gradient fallback — no PNG required) */
+  --sand-texture:
+    radial-gradient(circle at 20% 30%, rgba(58, 47, 32, 0.025) 0, transparent 38%),
+    radial-gradient(circle at 70% 65%, rgba(58, 47, 32, 0.02) 0, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(58, 47, 32, 0.018) 0, transparent 40%);
+}
+
+
+/* ==========================================================================
+   Semantic element styles — base layer
+   ========================================================================== */
+
+html { color: var(--fg-1); background: var(--bg); font-family: var(--font-ui); }
+body { font-size: var(--t-body); line-height: var(--lh-body); }
+
+h1, .h1 { font-family: var(--font-display); font-weight: 500; font-size: var(--t-h1);
+  line-height: var(--lh-tight); letter-spacing: var(--tr-display); color: var(--fg-1); margin: 0; }
+h2, .h2 { font-family: var(--font-display); font-weight: 500; font-size: var(--t-h2);
+  line-height: var(--lh-snug); letter-spacing: var(--tr-display); color: var(--fg-1); margin: 0; }
+h3, .h3 { font-family: var(--font-display); font-weight: 600; font-size: var(--t-h3);
+  line-height: var(--lh-snug); letter-spacing: 0.02em; color: var(--fg-1); margin: 0; }
+
+.display { font-family: var(--font-display); font-weight: 300; font-size: var(--t-display);
+  line-height: 0.95; letter-spacing: var(--tr-display); }
+
+.wordmark { font-family: var(--font-wordmark); font-weight: 400; text-transform: uppercase;
+  letter-spacing: var(--tr-wordmark); }
+
+.eyebrow, .label-section {
+  font-family: var(--font-ui); font-weight: 500;
+  font-size: var(--t-meta); text-transform: uppercase;
+  letter-spacing: var(--tr-section); color: var(--fg-3);
+}
+
+p { font-size: var(--t-body); line-height: var(--lh-body); color: var(--fg-2); margin: 0; }
+
+.data, .data-num { font-family: var(--font-data); font-feature-settings: "tnum" 1, "lnum" 1; }
+
+code, .code, kbd, samp {
+  font-family: var(--font-code); font-size: var(--t-code);
+  line-height: var(--lh-mono); letter-spacing: var(--tr-mono);
+}
+
+.code-lig { font-family: var(--font-ligature); font-variant-ligatures: contextual common-ligatures; }
+
+/* The horizon line — a 1px hairline used as a section divider */
+.horizon { height: 1px; background: linear-gradient(90deg,
+   transparent 0%, var(--line-2) 8%, var(--line-2) 92%, transparent 100%); }

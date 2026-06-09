@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<title>MIR[AI]GE · Mission Control</title>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+  html, body, #root { margin: 0; padding: 0; height: 100vh; background: var(--bg-deep); overflow: hidden; }
+  body { font-family: var(--font-ui); color: var(--sand-100); }
+  button { font-family: inherit; }
+  @keyframes mc-blip { 0%,80%,100%{opacity:1} 40%{opacity:0.35} }
+  @keyframes mc-edge-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="Atoms.jsx"></script>
+<script type="text/babel" src="ConsoleNav.jsx"></script>
+<script type="text/babel" src="AgentRail.jsx"></script>
+<script type="text/babel" src="TopologyMap.jsx"></script>
+<script type="text/babel" src="IncidentLog.jsx"></script>
+<script type="text/babel" src="IncidentDetail.jsx"></script>
+<script type="text/babel" src="StatusBar.jsx"></script>
+
+<script type="text/babel">
+  const { useState, useEffect } = React;
+
+  const AGENTS = [
+    { id: "o1",  kind: "orchestrator", name: "orchestrator-1", meta: "GRA11 · A2A HMAC coordinator", status: "busy" },
+    { id: "s1",  kind: "observer",     name: "sentinel-1",     meta: "edge · Tier 0 Suricata",       status: "healthy" },
+    { id: "s2",  kind: "observer",     name: "sentinel-2",     meta: "Tier 1 · XGBoost CIC-IDS",     status: "healthy" },
+    { id: "s3",  kind: "observer",     name: "sentinel-3",     meta: "Tier 2 · Llama-3.1-8B · 0.93", status: "watch" },
+    { id: "s4",  kind: "observer",     name: "sentinel-4",     meta: "canary PI · /admin/ack",       status: "alert" },
+    { id: "g1",  kind: "ghost",        name: "s_x9k2",         meta: "persona portal OVH · live",    status: "alert" },
+    { id: "g2",  kind: "ghost",        name: "s_p4mn",         meta: "persona k8s API · idle",       status: "healthy" },
+  ];
+
+  const BASE_LOG = [
+    { ts: "19:41:58.110", level: "OK",    body: <>route <span style={{color:"var(--mirage-300)"}}>198.51.100.0/24</span> → <span style={{color:"var(--mirage-300)"}}>octavia-lb-001</span></> },
+    { ts: "19:41:59.834", level: "OK",    body: <>sentinel-1 rate=<span style={{color:"var(--mirage-300)"}}>4 req/s</span> · Tier 0 Suricata clear</> },
+    { ts: "19:42:01.220", level: "OK",    body: <>A2A HMAC handshake sentinel-3 ↔ orchestrator-1</> },
+    { ts: "19:42:08.412", level: "WATCH", body: <>sentinel-1 rate=<span style={{color:"var(--mirage-300)"}}>47 req/10s</span> kind=<span style={{color:"var(--signal-watch)"}}>ai-recon</span></> },
+    { ts: "19:42:08.711", level: "WATCH", body: <>canary PI hit <span style={{color:"var(--signal-watch)"}}>/admin/acknowledge</span> · LLM agent confirmé</>, highlight: true },
+    { ts: "19:42:09.611", level: "ALERT", body: <>Llama-3.1-8B confidence=<span style={{color:"var(--mirage-300)"}}>0.93</span> vector=<span style={{color:"var(--signal-alert)"}}>ai-recon</span></>, highlight: true },
+  ];
+
+  const GHOST_LOG = [
+    { ts: "19:42:10.500", level: "GHOST", body: <>A2A signed → orchestrator-1 · session <span style={{color:"var(--mirage-300)"}}>s_x9k2</span></>, highlight: true },
+    { ts: "19:42:10.850", level: "GHOST", body: <>MCP route_to_ghost_shell · persona=<span style={{color:"var(--mirage-300)"}}>portal_ovh</span> · netns/TLS/DNS isolés</>, highlight: true },
+    { ts: "19:42:11.050", level: "OK",    body: <>L7 PATCH Octavia · XFF STARTS_WITH <span style={{color:"var(--mirage-300)"}}>198.51.100.</span> → <span style={{color:"var(--mirage-300)"}}>ghost_shell</span></> },
+    { ts: "19:42:11.100", level: "OK",    body: <>engagement <span style={{color:"var(--mirage-300)"}}>inc-0094</span> active · TTL 30 min · ratio <span style={{color:"var(--mirage-300)"}}>23×</span></> },
+  ];
+
+  function App() {
+    const [tab, setTab] = useState("Console");
+    const [agent, setAgent] = useState("o1");
+    const [ghost, setGhost] = useState(false);
+    const [clock, setClock] = useState("19:42:08");
+
+    // Tick the clock 1×/s when ghost is active (visual life signal).
+    useEffect(() => {
+      let s = 8;
+      const id = setInterval(() => {
+        s = (s + 1) % 60;
+        setClock(`19:42:${String(s).padStart(2, "0")}`);
+      }, 1000);
+      return () => clearInterval(id);
+    }, []);
+
+    const log = ghost ? [...BASE_LOG, ...GHOST_LOG] : BASE_LOG;
+
+    return (
+      <div style={{ display: "grid", gridTemplateRows: "56px 1fr 28px", height: "100vh" }}>
+        <ConsoleNav activeTab={tab} onTab={setTab} clock={clock} systemHealthy/>
+        <main style={{ display: "grid", gridTemplateColumns: "220px 1fr 340px", minHeight: 0 }}>
+          <AgentRail agents={AGENTS} selectedId={agent} onSelect={setAgent}/>
+          <div style={{ display: "grid", gridTemplateRows: "1fr 280px", minHeight: 0 }}>
+            <TopologyMap ghostNetActive={ghost}/>
+            <IncidentLog entries={log}/>
+          </div>
+          <IncidentDetail
+            incident={{ id: "inc-0094" }}
+            ghostNetActive={ghost}
+            onEngageGhost={() => setGhost(true)}
+            onClose={() => setGhost(false)}
+          />
+        </main>
+        <StatusBar/>
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" font-family="Space Grotesk, system-ui, sans-serif" role="img" aria-label="A2A handshake — orchestrator and observer agents negotiating an incident">
+  <defs>
+    <marker id="ahO" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0 0 L9 4.5 L0 9 z" fill="#2C6E62"></path>
+    </marker>
+    <marker id="ahI" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0 0 L9 4.5 L0 9 z" fill="#8C7651"></path>
+    </marker>
+    <marker id="ahA" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0 0 L9 4.5 L0 9 z" fill="#B0432C"></path>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="480" fill="#FBF7EE"></rect>
+
+  
+  <text x="48" y="48" font-family="Space Grotesk, sans-serif" font-weight="500" font-size="11" letter-spacing="2.4" fill="#5E4E36">FIGURE 01 · PROTOCOL</text>
+  <text x="48" y="82" font-family="Rajdhani, sans-serif" font-weight="500" font-size="24" letter-spacing="0.5" fill="#0F0B05">Agent-to-Agent (A2A) handshake on signal escalation</text>
+  <line x1="48" y1="100" x2="1152" y2="100" stroke="#3A2F20" stroke-opacity="0.28" stroke-width="1"></line>
+
+  
+  <g transform="translate(120, 130)">
+    <rect x="-60" y="0" width="120" height="36" fill="#FBF7EE" stroke="#3A2F20" stroke-opacity="0.45" stroke-width="1"></rect>
+    <text x="0" y="22" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="600" font-size="13" fill="#0F0B05">observer-3</text>
+    <line x1="0" y1="40" x2="0" y2="320" stroke="#3A2F20" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="2 4"></line>
+  </g>
+  <g transform="translate(560, 130)">
+    <rect x="-100" y="0" width="200" height="36" fill="#0F0B05"></rect>
+    <text x="0" y="22" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="600" font-size="13" fill="#EFE5D2">orchestrator-1</text>
+    <line x1="0" y1="40" x2="0" y2="320" stroke="#3A2F20" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="2 4"></line>
+  </g>
+  <g transform="translate(960, 130)">
+    <rect x="-100" y="0" width="200" height="36" fill="#FBF7EE" stroke="#3A2F20" stroke-opacity="0.45" stroke-width="1"></rect>
+    <text x="0" y="22" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="600" font-size="13" fill="#0F0B05">OVH MCP server</text>
+    <line x1="0" y1="40" x2="0" y2="320" stroke="#3A2F20" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="2 4"></line>
+  </g>
+
+  
+  <text x="48" y="206" font-family="JetBrains Mono, monospace" font-size="11" fill="#3A2F20">t+0</text>
+  <line x1="120" y1="202" x2="556" y2="202" stroke="#8C7651" stroke-width="1.5" marker-end="url(#ahI)"></line>
+  <text x="338" y="192" text-anchor="middle" font-family="Fira Code, monospace" font-size="11.5" fill="#2C6E62">signal { src: 198.51.100.7, score: 0.94, kind: &#34;exfil&#34; }</text>
+
+  
+  <text x="48" y="256" font-family="JetBrains Mono, monospace" font-size="11" fill="#3A2F20">t+312 ms</text>
+  <line x1="560" y1="252" x2="560" y2="286" stroke="#3A2F20" stroke-opacity="0.28" stroke-width="1"></line>
+  <text x="580" y="272" font-family="Space Grotesk, sans-serif" font-size="11.5" fill="#5E4E36">orchestrator evaluates against signature library</text>
+
+  
+  <text x="48" y="316" font-family="JetBrains Mono, monospace" font-size="11" fill="#3A2F20">t+812 ms</text>
+  <line x1="564" y1="312" x2="956" y2="312" stroke="#2C6E62" stroke-width="1.5" marker-end="url(#ahO)"></line>
+  <text x="760" y="302" text-anchor="middle" font-family="Fira Code, monospace" font-size="11.5" fill="#2C6E62">tool:cloud.vrack.clone({ src: &#34;vrack-3201&#34;, into: &#34;gn-0094&#34; })</text>
+
+  
+  <text x="48" y="366" font-family="JetBrains Mono, monospace" font-size="11" fill="#3A2F20">t+1.92 s</text>
+  <line x1="956" y1="362" x2="564" y2="362" stroke="#8C7651" stroke-width="1.5" marker-end="url(#ahI)"></line>
+  <text x="760" y="352" text-anchor="middle" font-family="Fira Code, monospace" font-size="11.5" fill="#2C6E62">{ ok: true, vlan: 4087 → 4290, payload: 2.4 GiB }</text>
+
+  
+  <text x="48" y="416" font-family="JetBrains Mono, monospace" font-size="11" fill="#3A2F20">t+2.84 s</text>
+  <line x1="556" y1="412" x2="124" y2="412" stroke="#B0432C" stroke-width="1.5" marker-end="url(#ahA)"></line>
+  <text x="338" y="402" text-anchor="middle" font-family="Fira Code, monospace" font-size="11.5" fill="#B0432C">redirect 198.51.100.7 → gn-0094 · rotate 10.42.0.0/24 → /7.0/24</text>
+
+  
+  <g transform="translate(48, 460)">
+    <line x1="0" y1="-4" x2="20" y2="-4" stroke="#2C6E62" stroke-width="1.5" marker-end="url(#ahO)"></line>
+    <text x="28" y="0" font-family="Space Grotesk, sans-serif" font-size="11" fill="#5E4E36">tool call (MCP)</text>
+    <line x1="160" y1="-4" x2="180" y2="-4" stroke="#8C7651" stroke-width="1.5" marker-end="url(#ahI)"></line>
+    <text x="188" y="0" font-family="Space Grotesk, sans-serif" font-size="11" fill="#5E4E36">A2A response</text>
+    <line x1="320" y1="-4" x2="340" y2="-4" stroke="#B0432C" stroke-width="1.5" marker-end="url(#ahA)"></line>
+    <text x="348" y="0" font-family="Space Grotesk, sans-serif" font-size="11" fill="#5E4E36">redirect command</text>
+  </g>
+</svg>

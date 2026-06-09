@@ -1,35 +1,40 @@
 # Mir[AI]ge — website
 
-Static marketing landing page + a mission-control mockup. No build step: plain HTML,
-the MIR[AI]GE design tokens (`colors_and_type.css` + `fonts/`), and React loaded from a CDN
-with Babel transpiling the `.jsx` files in the browser.
+Static marketing landing page + a mission-control mockup for [Mir[AI]ge](https://github.com/kim-tsr).
+No build step: plain HTML, the MIR[AI]GE design tokens (`colors_and_type.css` + `fonts/`),
+and React loaded from a CDN with Babel transpiling the `.jsx` files in the browser.
 
 ```
-website/
-├── index.html          # root entry → redirects to the landing
-├── colors_and_type.css # design tokens + @font-face
-├── fonts/              # self-hosted woff2 (Rajdhani, Syncopate, …)
-├── assets/             # logo, topology, architecture diagrams, imagery
-└── ui_kits/
-    ├── landing/        # public landing page  →  /
-    └── mission_control/# operator console mockup  →  /console
+.
+├── index.html            # the landing page          →  /
+├── *.jsx                 # landing components (Hero, SpecSheet, …)
+├── colors_and_type.css   # design tokens + @font-face
+├── fonts/                # self-hosted woff2 (Rajdhani, Syncopate, …)
+├── assets/               # logo, topology, architecture diagrams, imagery
+├── console/              # operator console mockup     →  /console
+│   ├── index.html
+│   └── *.jsx
+└── vercel.json
 ```
 
 ## Preview locally
 
 ```bash
-make site          # from repo root → http://localhost:8000
-# or:
-cd website && python3 -m http.server 8000
+python3 -m http.server 8000
+# landing  → http://localhost:8000/
+# console  → http://localhost:8000/console/
 ```
 
-## Deploy
+## Deploy to Vercel
 
-It's a fully static site — deploy `website/` to any static host.
+It's a fully static site — **no framework, no build step, no Next.js required.**
 
-- **Vercel / Netlify**: point the project root at `website/`. `vercel.json` already maps
-  `/` → the landing and `/console` → the mission-control mockup.
-- **GitHub Pages / S3 / nginx**: serve the directory as-is.
+1. Import this repo on [vercel.com/new](https://vercel.com/new).
+2. **Framework Preset: "Other"** · leave Build Command and Output Directory **empty**
+   (the repo root *is* the site).
+3. Deploy. `/` serves the landing, `/console` serves the mission-control mockup.
 
-> Loaded from CDN: React 18 + Babel standalone (for in-browser JSX). For a production build
-> you may want to pre-transpile the JSX and pin/self-host those scripts.
+Works the same on Netlify, GitHub Pages, S3, or any static host — serve the directory as-is.
+
+> Loaded from CDN: React 18 + Babel standalone (for in-browser JSX). It works as-is; for a
+> faster production build you can pre-transpile the JSX and pin/self-host those scripts.

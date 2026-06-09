@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+# Finder/Drive copy artifacts ("foo 2.ext")
+* 2.*
+# Editors
+.vscode/
+.idea/
+*.swp
+# Vercel
+.vercel/
