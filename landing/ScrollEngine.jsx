@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* ScrollEngine — Apple-style scroll dynamism:
+/* ScrollEngine - Apple-style scroll dynamism:
    - useScrollY: tracks window scroll for parallax
    - <Reveal>: fades + translates children up as they enter the viewport
    - <ScrollProgress>: thin sticky progress bar at the top of the page
@@ -17,6 +17,35 @@ const useScrollY = () => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(raf); };
   }, []);
+  return y;
+};
+
+/* Lerped scroll value: keeps animating a few frames after the wheel stops,
+   which reads as inertia instead of a hard 1:1 mapping. */
+const useSmoothScrollY = (ease = 0.16) => {
+  const [y, setY] = useState(typeof window === "undefined" ? 0 : window.scrollY);
+  useEffect(() => {
+    let raf = 0;
+    let current = window.scrollY;
+    let target = window.scrollY;
+    let running = false;
+    const loop = () => {
+      current += (target - current) * ease;
+      if (Math.abs(target - current) < 0.3) {
+        current = target;
+        running = false;
+      } else {
+        raf = requestAnimationFrame(loop);
+      }
+      setY(current);
+    };
+    const onScroll = () => {
+      target = window.scrollY;
+      if (!running) { running = true; raf = requestAnimationFrame(loop); }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(raf); };
+  }, [ease]);
   return y;
 };
 
@@ -84,4 +113,4 @@ const ScrollProgress = () => {
   );
 };
 
-Object.assign(window, { useScrollY, Reveal, ScrollProgress });
+Object.assign(window, { useScrollY, useSmoothScrollY, Reveal, ScrollProgress });

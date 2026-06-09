@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>MIR[AI]GE</title>
-<meta name="description" content="Mir[AI]ge : defense by attrition. On piège les attaquants augmentés par IA dans un leurre génératif qui brûle leur compute. Projet hackathon cyber OVHcloud 2026."/>
+<meta name="description" content="Mir[AI]ge : defense by attrition. On piège les attaquants augmentés par IA dans un leurre génératif qui brûle leur compute. Projet du hackathon OVH · EPITA Rennes 2026."/>
 <link rel="icon" href="assets/logo/mark.svg"/>
 <link rel="stylesheet" href="colors_and_type.css"/>
 <style>
@@ -30,15 +30,15 @@
 <script type="text/babel" src="landing/ScrollEngine.jsx"></script>
 <script type="text/babel" src="landing/ChapterIndex.jsx"></script>
 <script type="text/babel" src="landing/SectionDivider.jsx"></script>
-<script type="text/babel" src="landing/LandingNav.jsx"></script>
 <script type="text/babel" src="landing/Hero.jsx"></script>
+<script type="text/babel" src="landing/Probleme.jsx"></script>
 <script type="text/babel" src="landing/SpecSheet.jsx"></script>
+<script type="text/babel" src="landing/Limites.jsx"></script>
 <script type="text/babel" src="landing/Primitives.jsx"></script>
 <script type="text/babel" src="landing/Timeline.jsx"></script>
 <script type="text/babel" src="landing/Diagram.jsx"></script>
 <script type="text/babel" src="landing/CodeBlock.jsx"></script>
 <script type="text/babel" src="landing/ConsoleSnippet.jsx"></script>
-<script type="text/babel" src="landing/DoctrineQuote.jsx"></script>
 <script type="text/babel" src="landing/FieldReadings.jsx"></script>
 <script type="text/babel" src="landing/Invitation.jsx"></script>
 <script type="text/babel" src="landing/LandingFoot.jsx"></script>
@@ -48,8 +48,10 @@
     return (
       <>
         <ScrollProgress/>
-        <LandingNav/>
         <Hero/>
+
+        <div id="chapter-probleme"><Reveal y={56} dur={900}><Probleme/></Reveal></div>
+        <SectionDivider/>
 
         <div id="chapter-principe"><Reveal y={56} dur={900}><SpecSheet/></Reveal></div>
         <SectionDivider/>
@@ -66,9 +68,9 @@
         <div id="chapter-console"><Reveal y={56} dur={900}><ConsoleSnippet/></Reveal></div>
         <SectionDivider/>
 
-        <div id="chapter-doctrine"><Reveal y={56} dur={900}><DoctrineQuote/></Reveal></div>
-
         <div id="chapter-readings"><Reveal y={56} dur={900}><FieldReadings/></Reveal></div>
+
+        <div id="chapter-limites"><Reveal y={56} dur={900}><Limites/></Reveal></div>
         <SectionDivider/>
 
         <div id="chapter-invitation"><Reveal y={56} dur={900}><Invitation/></Reveal></div>

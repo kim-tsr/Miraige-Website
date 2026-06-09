@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* IncidentLog — the live A2A / MCP event stream. */
+/* IncidentLog - the live A2A / MCP event stream. */
 
 const LEVEL_COLOR = {
   OK:    "var(--signal-ok)",

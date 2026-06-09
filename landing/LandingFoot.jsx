@@ -27,7 +27,7 @@ const LandingFoot = () => (
         AI
         <span style={{ color: "var(--mirage-500)" }}>]</span>GE
       </span>
-      <span>Hackathon cyber OVHcloud · 2026</span>
+      <span>Hackathon OVH · EPITA Rennes · 2026</span>
     </div>
   </footer>
 );

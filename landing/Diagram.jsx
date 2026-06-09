@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
 const Diagram = () => (
   <section className="mg-pad" style={{
-    padding: "0 48px 120px", maxWidth: 1280, margin: "0 auto",
+    padding: "0 48px 88px", maxWidth: 1280, margin: "0 auto",
   }}>
     <figure
+      className="mg-diagram"
       style={{
         margin: 0, background: "var(--bg-panel)",
         border: "1px solid var(--line-2)", padding: 32,
@@ -12,7 +13,7 @@ const Diagram = () => (
     >
       <img
         src="assets/architecture/ghost-net-diversion.svg"
-        alt="Ghost Net diversion architecture"
+        alt="Architecture complète Mir[AI]ge : détection, décision et reroutage L7 vers le Ghost Shell"
         style={{ width: "100%", display: "block" }}
       />
       <figcaption style={{
@@ -22,7 +23,7 @@ const Diagram = () => (
         <b style={{
           fontFamily: "var(--font-code)", color: "var(--fg-2)",
           fontWeight: 500, letterSpacing: "0.04em",
-        }}>Fig. 02</b> · diversion Ghost Net · le flux hostile est redirigé vers le Ghost Shell par un PATCH L7 sur Octavia · le flux légitime n'est jamais touché · aucun clone, le SI leurre est généré à la volée
+        }}>Fig. 02</b> · architecture complète · ① tout le trafic entre par le même load balancer, les logs alimentent le Sentinel ② la cascade T0→T2 détecte l'agent IA ③ l'alerte A2A signée part à l'Orchestrateur, seul à décider ④ un PATCH L7 cible le cookie de la session hostile ⑤ elle bascule vers le Ghost Shell sans s'en apercevoir · le flux légitime n'est jamais dérouté
       </figcaption>
     </figure>
   </section>

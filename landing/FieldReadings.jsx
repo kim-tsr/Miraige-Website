@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* FieldReadings — animated count-up readings, instrument-panel layout. */
+/* FieldReadings - animated count-up readings, instrument-panel layout. */
 
 const { useState: frUseState, useEffect: frUseEffect, useRef: frUseRef } = React;
 
@@ -77,16 +77,8 @@ const Reading = ({ k, v, unit, sub, accent = "var(--fg-1)" }) => (
 const FieldReadings = () => (
   <section className="mg-pad" style={{
     position: "relative",
-    padding: "120px 48px", maxWidth: 1280, margin: "0 auto",
+    padding: "96px 48px", maxWidth: 1280, margin: "0 auto",
   }}>
-    <div className="mg-marginalia" style={{
-      position: "absolute", top: 60, right: 48,
-      fontFamily: "var(--font-code)", fontSize: 10.5,
-      letterSpacing: "0.22em", color: "var(--fg-3)",
-    }}>
-      § 08 · field readings · stress-test J3
-    </div>
-
     <div className="mg-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 96, alignItems: "start" }}>
       <div className="mg-unstick" style={{ position: "sticky", top: 100 }}>
         <div style={{
@@ -114,7 +106,7 @@ const FieldReadings = () => (
           maxWidth: 380,
         }}>
           La conso et le coût attaquant sont <em>mesurés</em> (champ <code style={{ fontFamily: "var(--font-code)", color: "var(--mirage-700)" }}>usage</code> de
-          l'API OVH). Le coût défenseur est estimé (modèle CodeCarbon), donc le ratio reste
+          l'API OVH). Le coût défenseur est estimé (modèle TDP), donc le ratio reste
           un ordre de grandeur, pas un chiffre exact.
         </p>
         <div style={{
@@ -134,30 +126,19 @@ const FieldReadings = () => (
         <div className="mg-readings" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 32 }}>
           <Reading k="tokens attaquant brûlés" v="17,8" unit="M" sub="mesuré · champ usage API OVH" accent="var(--mirage-700)"/>
           <Reading k="coût OVH attaquant" v="6,58" unit="€" sub="réel · facturé par OVH"/>
-          <Reading k="notre coût" v="0,002" unit="€" sub="estimé · génération en O(n)"/>
+          <Reading k="notre coût" v="0,002" unit="€" sub="estimé · génération à la volée"/>
 
-          <Reading k="amplification ré-ingestion" v="19,2" unit="×" sub="926 k servis → 17,8 M consommés (O(n²))" accent="var(--mirage-700)"/>
+          <Reading k="amplification ré-ingestion" v="19,2" unit="×" sub="926 k servis → 17,8 M consommés" accent="var(--mirage-700)"/>
           <Reading k="appels LLM attaquant" v="10875" sub="mesuré sur la vague"/>
           <Reading k="agents simultanés" v="30" sub="5 × 6 modèles OVH"/>
 
           <Reading k="obéissance au canary PI" v="60" unit="%" sub="18 / 30 · reverse prompt injection" accent="var(--signal-ghost)"/>
-          <Reading k="latence détection → reroute" v="2,84" unit="s" sub="cascade T0 → T2 · cible ≈ 3 s"/>
-          <Reading k="ghost shell · RAM" v="50" unit="MB" sub="1 container · personas multiples"/>
+          <Reading k="latence détection → reroute" v="≈ 3" unit="s" sub="cible architecturale · cascade T0 → T2"/>
+          <Reading k="ghost shell" v="1" unit="conteneur" sub="borné · personas multiples (Host header)"/>
 
           <Reading k="agents pris dans le maze" v="30" sub="sur 30 · cred-graph + FS procédural"/>
-          <Reading k="énergie défense" v="0,011" unit="kWh" sub="0,54 gCO₂e · estimé CodeCarbon"/>
+          <Reading k="énergie défense" v="0,011" unit="kWh" sub="0,54 gCO₂e · estimé · modèle TDP"/>
           <Reading k="plus gros agent (Llama-3.3-70B)" v="1,96" unit="M" sub="525 appels · 1,31 € en 1 h"/>
-        </div>
-        <div className="mg-wrap" style={{
-          marginTop: 48, paddingTop: 24, borderTop: "1px solid var(--line-3)",
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          fontFamily: "var(--font-code)", fontSize: 11,
-          letterSpacing: "0.22em", textTransform: "uppercase",
-          color: "var(--fg-3)",
-        }}>
-          <span>Lectures &middot; 12 / 12</span>
-          <span>Source &middot; usage API OVH</span>
-          <span>Base &middot; remise à zéro</span>
         </div>
       </div>
     </div>

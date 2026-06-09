@@ -1,4 +1,4 @@
-# Mir[AI]ge — website
+# Mir[AI]ge - website
 
 Static marketing landing page and a mission-control mockup for [Mir[AI]ge](https://github.com/kim-tsr).
 No build step: plain HTML, the MIR[AI]GE design tokens (`colors_and_type.css` + `fonts/`),
@@ -27,14 +27,14 @@ python3 -m http.server 8000
 
 ## Deploy to Vercel
 
-It's a fully static site — **no framework, no build step, no Next.js required.**
+It's a fully static site - **no framework, no build step, no Next.js required.**
 
 1. Import this repo on [vercel.com/new](https://vercel.com/new).
 2. **Framework Preset: "Other"** · leave Build Command and Output Directory **empty**
    (the repo root *is* the site).
 3. Deploy. `/` serves the landing, `/console` serves the mission-control mockup.
 
-Works the same on Netlify, GitHub Pages, S3, or any static host — serve the directory as-is.
+Works the same on Netlify, GitHub Pages, S3, or any static host - serve the directory as-is.
 
 > Loaded from CDN: React 18 + Babel standalone (for in-browser JSX). It works as-is; for a
 > faster production build you can pre-transpile the JSX and pin/self-host those scripts.

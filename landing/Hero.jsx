@@ -1,24 +1,26 @@
 /* eslint-disable react/prop-types */
-/* Hero — photographic background with scroll-driven parallax. */
+/* Hero - photographic background with scroll-driven parallax. */
 
 const { useEffect: heroUseEffect } = React;
 
 const Hero = () => {
-  const y = useScrollY();
+  const y = useSmoothScrollY();
 
   return (
     <header id="top" style={{
       position: "relative", overflow: "hidden",
-      minHeight: "clamp(560px, 92vh, 880px)", background: "#C9A77E",
+      minHeight: "100vh", background: "#C9A77E",
     }}>
-      {/* Photo background — parallax: moves slower than scroll */}
+      {/* Photo background - parallax: moves slower than scroll.
+          Top overshoot (-45%) gives the translation real headroom so the
+          image edge never slides into view. */}
       <div style={{
-        position: "absolute", inset: "-12px",
+        position: "absolute", top: "-45%", left: "-12px", right: "-12px", bottom: "-12px",
         backgroundImage: "url(assets/imagery/desert-dune-2.jpg)",
         backgroundSize: "cover",
-        backgroundPosition: "center 62%",
+        backgroundPosition: "center 72%",
         filter: "blur(1.6px) saturate(0.92)",
-        transform: `translate3d(0, ${y * 0.45}px, 0) scale(1.05)`,
+        transform: `translate3d(0, ${y * 0.3}px, 0)`,
         willChange: "transform",
       }}/>
       {/* Warm tonal wash */}
@@ -32,76 +34,73 @@ const Hero = () => {
             "rgba(58,47,32,0.24) 100%)",
         mixBlendMode: "multiply",
       }}/>
-      {/* Atmospheric mirage glow — parallax slower */}
-      <div style={{
-        position: "absolute", left: "-5%", right: "-5%",
-        top: `calc(46% + ${y * 0.12}px)`, height: 280,
-        background:
-          "radial-gradient(ellipse 70% 70% at 50% 50%, " +
-            "rgba(142,201,188,0.32) 0%, " +
-            "rgba(212,190,146,0.16) 35%, " +
-            "rgba(212,190,146,0) 70%)",
-        filter: "blur(32px)",
-        mixBlendMode: "screen",
-        pointerEvents: "none",
-        willChange: "transform",
-      }}/>
-      {/* Single faint horizon shimmer */}
-      <div style={{
-        position: "absolute", left: 0, right: 0,
-        top: `calc(56% + ${y * 0.18}px)`, height: 1,
-        background:
-          "linear-gradient(90deg, transparent 0%, " +
-            "rgba(142,201,188,0.55) 30%, " +
-            "rgba(142,201,188,0.72) 50%, " +
-            "rgba(142,201,188,0.55) 70%, " +
-            "transparent 100%)",
-        filter: "blur(0.6px)",
-        pointerEvents: "none",
-      }}/>
-
       <SurveyGrid/>
 
       <div className="mg-pad" style={{
         position: "relative", zIndex: 2,
-        padding: "clamp(120px, 18vh, 180px) 48px clamp(80px, 12vh, 140px)",
+        minHeight: "inherit",
+        padding: "clamp(56px, 9vh, 100px) 48px clamp(48px, 8vh, 90px)",
         maxWidth: 1280, margin: "0 auto",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", textAlign: "center",
       }}>
         <div style={{
           fontFamily: '"Syncopate", sans-serif', fontWeight: 400,
           fontSize: 11, letterSpacing: "0.42em",
           textTransform: "uppercase", color: "var(--sand-800)",
+          opacity: Math.max(0, 1 - y / 320),
           transform: `translate3d(0, ${y * -0.08}px, 0)`,
-          willChange: "transform",
+          willChange: "transform, opacity",
         }}>
           Autonomous Moving Target Defense
         </div>
-        <h1 style={{
-          marginTop: 28,
-          fontFamily: '"Rajdhani", sans-serif', fontWeight: 300,
-          fontSize: "clamp(40px, 11vw, 128px)", lineHeight: 0.96, letterSpacing: "0.02em",
-          color: "var(--sand-900)", textWrap: "balance",
-          maxWidth: 1180,
-          mixBlendMode: "multiply",
+        {/* Wordmark - same treatment as the slides cover.
+            Rises, zooms a touch and dissolves as the dunes scroll away. */}
+        <h1 className="mg-hero-mark" style={{
+          margin: "36px 0 0",
+          fontFamily: '"Syncopate", sans-serif', fontWeight: 700,
+          fontSize: "clamp(40px, 10vw, 180px)", lineHeight: 1,
+          letterSpacing: "0.16em", whiteSpace: "nowrap",
+          color: "var(--sand-900)",
           textShadow: "0 1px 0 rgba(247,241,230,0.45)",
-          transform: `translate3d(0, ${y * -0.12}px, 0)`,
-          willChange: "transform",
+          opacity: Math.max(0, 1 - y / 640),
+          transform: `translate3d(0, ${y * -0.16}px, 0) scale(${1 + Math.min(y, 800) * 0.00022})`,
+          transformOrigin: "center 60%",
+          willChange: "transform, opacity",
         }}>
-          L'attaquant voit une ville.<br/>
-          <em style={{ fontStyle: "normal", color: "var(--mirage-700)", fontWeight: 500 }}>
+          MIR<span style={{ color: "var(--mirage-500)" }}>[</span>
+          AI
+          <span style={{ color: "var(--mirage-500)" }}>]</span>GE
+        </h1>
+        <p style={{
+          margin: "44px 0 0", maxWidth: 880,
+          fontFamily: '"Rajdhani", sans-serif', fontWeight: 500, fontStyle: "italic",
+          fontSize: "clamp(20px, 3.2vw, 38px)", lineHeight: 1.3,
+          color: "var(--sand-900)", textWrap: "balance",
+          mixBlendMode: "multiply",
+          opacity: Math.max(0, 1 - y / 460),
+          transform: `translate3d(0, ${y * -0.22}px, 0)`,
+          willChange: "transform, opacity",
+        }}>
+          L'attaquant voit une ville.{" "}
+          <em style={{ fontStyle: "italic", color: "var(--mirage-700)" }}>
             Il n'y a pas de ville.
           </em>
-        </h1>
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 72,
-                      transform: `translate3d(0, ${y * -0.18}px, 0)`,
-                      willChange: "transform" }}>
-          <a href="#invitation" style={{
-            fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13,
-            color: "var(--sand-50)", background: "var(--sand-900)",
-            padding: "14px 26px", borderRadius: 4,
-            textDecoration: "none", letterSpacing: "0.04em",
-          }}>Nous contacter →</a>
+        </p>
+        <div style={{
+          marginTop: 40,
+          display: "inline-flex", alignItems: "center", gap: 10,
+          padding: "9px 18px",
+          border: "1px solid var(--sand-700)", borderRadius: 999,
+          fontFamily: "var(--font-code)", fontSize: 11,
+          letterSpacing: "0.18em", textTransform: "uppercase",
+          color: "var(--sand-800)",
+          background: "rgba(247,241,230,0.35)",
+          opacity: Math.max(0, 1 - y / 420),
+          transform: `translate3d(0, ${y * -0.2}px, 0)`,
+          willChange: "transform, opacity",
+        }}>
+          Hackathon OVH · EPITA Rennes · 2026
         </div>
       </div>
 

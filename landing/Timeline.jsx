@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
-/* Timeline — the 2.84-second incident broken down second by second. */
+/* Timeline - an illustrative ~3-second incident broken down second by second. */
 
 const TLStep = ({ t, ms, title, body, color, alert }) => (
   <div
+    className="mg-tl-step"
     style={{
       display: "grid", gridTemplateColumns: "110px 24px 1fr",
       gap: 24, alignItems: "start",
@@ -56,7 +57,7 @@ const TLStep = ({ t, ms, title, body, color, alert }) => (
 const Timeline = () => (
   <section className="mg-pad"
     style={{
-      padding: "120px 48px", maxWidth: 1080, margin: "0 auto",
+      padding: "96px 48px", maxWidth: 1080, margin: "0 auto",
     }}
   >
     <div className="mg-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 80, alignItems: "start" }}>
@@ -85,7 +86,7 @@ const Timeline = () => (
           Le chemin critique, étape par étape : cascade de détection <code style={{
             fontFamily: "var(--font-code)", color: "var(--mirage-700)", fontSize: 14,
           }}>T0 → T2</code>, signature A2A, puis un seul PATCH L7 sur Octavia.
-          Agent LLM ReAct, mesuré en lab.
+          Scénario illustratif, agent LLM ReAct · ordre de grandeur ≈ 3 s.
         </p>
       </div>
 
@@ -106,7 +107,7 @@ const Timeline = () => (
         <TLStep
           t="19:42:08.412" ms="312 ms"
           title="Heuristique débit + canari PI"
-          body="47 requêtes anormales détectées en fenêtre 10s. L'endpoint /admin/acknowledge est appelé · le reverse prompt injection canary confirme un agent LLM (compliance >50% Palisade Research)."
+          body="47 requêtes anormales détectées en fenêtre 10s. L'endpoint /admin/acknowledge est appelé · le reverse prompt injection canary confirme un agent LLM (18/30 agents y ont obéi sur notre campagne ; méthode inspirée de Palisade Research)."
           color="var(--signal-watch)"
         />
         <TLStep

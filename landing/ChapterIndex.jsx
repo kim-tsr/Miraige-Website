@@ -1,19 +1,20 @@
 /* eslint-disable react/prop-types */
-/* ChapterIndex — sticky right-rail marginalia showing current section.
+/* ChapterIndex - sticky right-rail marginalia showing current section.
    Inspired by Stripe / Linear / Anthropic-style scroll indices. */
 
 const { useState: ciUseState, useEffect: ciUseEffect } = React;
 
 const CHAPTERS = [
-  { id: "principe",    n: "01", label: "principe"  },
-  { id: "primitives",  n: "02", label: "primitives"},
-  { id: "anatomie",    n: "03", label: "anatomie"  },
-  { id: "diagramme",   n: "04", label: "diagramme" },
-  { id: "code",        n: "05", label: "code"      },
-  { id: "console",     n: "06", label: "console"   },
-  { id: "doctrine",    n: "07", label: "doctrine"  },
+  { id: "probleme",    n: "01", label: "problème"  },
+  { id: "principe",    n: "02", label: "principe"  },
+  { id: "primitives",  n: "03", label: "primitives"},
+  { id: "anatomie",    n: "04", label: "anatomie"  },
+  { id: "diagramme",   n: "05", label: "diagramme" },
+  { id: "code",        n: "06", label: "code"      },
+  { id: "console",     n: "07", label: "console"   },
   { id: "readings",    n: "08", label: "readings"  },
-  { id: "invitation",  n: "09", label: "contact"   },
+  { id: "limites",     n: "09", label: "limites"   },
+  { id: "invitation",  n: "10", label: "démo"      },
 ];
 
 const ChapterIndex = () => {

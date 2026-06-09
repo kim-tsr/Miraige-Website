@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-/* Primitives — editorial column instead of three equal cards.
+/* Primitives - editorial column instead of three equal cards.
    Each primitive is a numbered editorial section with marginalia. */
 
-const PrimRow = ({ num, tag, name, lede, mcp, accent, glyph, side = "right" }) => (
+const PrimRow = ({ num, tag, name, lede, facts, accent, glyph, side = "right" }) => (
   <article className="mg-prim-row" style={{
     position: "relative",
     padding: "56px 0", borderTop: "1px solid var(--line-2)",
@@ -43,7 +43,7 @@ const PrimRow = ({ num, tag, name, lede, mcp, accent, glyph, side = "right" }) =
       </p>
     </div>
 
-    {/* marginalia — a small "lab note" card */}
+    {/* marginalia - concrete facts for this primitive */}
     <aside style={{
       padding: 22,
       background: "var(--bg-panel)",
@@ -52,21 +52,30 @@ const PrimRow = ({ num, tag, name, lede, mcp, accent, glyph, side = "right" }) =
     }}>
       <div style={{
         display: "flex", alignItems: "center", gap: 10,
-        marginBottom: 14, color: accent,
+        marginBottom: 6, color: accent,
       }}>
         {glyph}
         <span style={{
           fontFamily: "var(--font-code)", fontSize: 10.5,
           letterSpacing: "0.18em", textTransform: "uppercase",
-        }}>note de bord</span>
+        }}>en pratique</span>
       </div>
-      <pre style={{
-        margin: 0,
-        fontFamily: '"Fira Code", monospace', fontSize: 11.5,
-        lineHeight: 1.7, color: "var(--fg-2)",
-        whiteSpace: "pre-wrap",
-        fontVariantLigatures: "contextual common-ligatures",
-      }}>{mcp}</pre>
+      {facts.map(({ k, v }) => (
+        <div key={k} style={{
+          padding: "10px 0",
+          borderBottom: "1px dashed var(--line-2)",
+        }}>
+          <div style={{
+            fontFamily: "var(--font-code)", fontSize: 10,
+            letterSpacing: "0.16em", textTransform: "uppercase",
+            color: "var(--fg-3)",
+          }}>{k}</div>
+          <div style={{
+            marginTop: 4, fontSize: 13.5, lineHeight: 1.5,
+            color: "var(--fg-1)",
+          }}>{v}</div>
+        </div>
+      ))}
     </aside>
   </article>
 );
@@ -77,16 +86,8 @@ const Primitives = () => (
     background: "var(--sand-100)",
     borderTop: "1px solid var(--line-2)",
     borderBottom: "1px solid var(--line-2)",
-    padding: "120px 48px",
+    padding: "96px 48px",
   }}>
-    <div className="mg-marginalia" style={{
-      position: "absolute", top: 60, right: 48,
-      fontFamily: "var(--font-code)", fontSize: 10.5,
-      letterSpacing: "0.22em", color: "var(--fg-3)",
-    }}>
-      § 02 · primitives
-    </div>
-
     <div style={{ maxWidth: 1280, margin: "0 auto" }}>
       <div style={{
         fontFamily: "var(--font-code)", fontSize: 10.5,
@@ -120,14 +121,19 @@ const Primitives = () => (
               <line x1="11" y1="18" x2="21" y2="18"/>
             </svg>
           }
-          mcp={`sentinel-3 → orchestrator-1\n  signal {\n    src: 198.51.100.7,\n    confidence: 0.93,\n    vector: "ai-recon",\n    sig: hmac_sha256(...)\n  }\n  → ack 142 ms`}
+          facts={[
+            { k: "Signature", v: "HMAC-SHA256 + horodatage anti-rejeu sur chaque message" },
+            { k: "Rôles", v: "le Sentinel signale, seul l'Orchestrateur décide et agit" },
+            { k: "Décision", v: "riposte engagée à partir d'un seuil de confiance de 0,75" },
+            { k: "Audit", v: "request_id propagé de bout en bout, chaque décision tracée" },
+          ]}
         />
         <PrimRow
           num="02"
           tag="Délégation infra · scoped sécurité"
           name="MCP · OVHcloud Octavia"
           accent="var(--sand-700)"
-          lede="L'Orchestrateur ne pousse pas du Terraform : il appelle trois outils MCP scopés (rerouter, engager, libérer). Tools allowlistés, token IAM frais par appel, validation du claim aud. On durcit le maillon faible des stacks agentiques au lieu de l'ouvrir."
+          lede="L'Orchestrateur ne pousse pas du Terraform : il appelle trois outils MCP scopés (route_to_ghost_shell, reroute_lb_to_honeypot, terminate_after_ttl). Tools allowlistés, token IAM frais par appel, validation du claim aud. On durcit le maillon faible des stacks agentiques au lieu de l'ouvrir."
           glyph={
             <svg width="20" height="20" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4">
               <rect x="4" y="11" width="24" height="14" rx="1.5"/>
@@ -137,14 +143,19 @@ const Primitives = () => (
               <line x1="24" y1="14" x2="24" y2="22"/>
             </svg>
           }
-          mcp={`tool: "route_to_ghost_shell"\n  input: {\n    session_id: "s_x9k2",\n    persona: "portal_ovh",\n    lb_rule: "xff_starts_with"\n  }\n→ ack 1.05 s · Octavia L7 PATCH`}
+          facts={[
+            { k: "route_to_ghost_shell", v: "ouvre la session leurre avec la bonne persona" },
+            { k: "reroute_lb_to_honeypot", v: "un PATCH L7 Octavia, ciblé sur le cookie de session" },
+            { k: "terminate_after_ttl", v: "libère tout automatiquement après 30 min" },
+            { k: "Garde-fous", v: "allowlist statique : ces 3 outils, validés, rien d'autre" },
+          ]}
         />
         <PrimRow
           num="03"
           tag="Leurre procédural · 5 €/mois"
           name="Ghost Shell"
           accent="var(--signal-ghost)"
-          lede="UN seul container présente l'illusion d'un SI complet via persona routing (Host header). Path-seeded RNG + Mimesis 30 MB/s par vCPU + reverse PI canary. On ne clone pas : on génère en O(n), l'attaquant lit en O(n²)."
+          lede="Les honeypots statiques se fingerprintent à l'échelle d'Internet (Bitter Harvest, WOOT 2018) : le leurre doit donc être généré, jamais figé. UN seul container présente l'illusion d'un SI complet via persona routing (Host header), génération procédurale 100 % stdlib seedée par chemin (path-seeded RNG), plus un reverse prompt-injection canary. On ne clone pas : générer ne nous coûte presque rien, et l'attaquant ré-ingère tout ce qu'il a lu à chaque pas."
           glyph={
             <svg width="20" height="20" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeDasharray="3 2">
               <rect x="5" y="5" width="22" height="22"/>
@@ -152,9 +163,62 @@ const Primitives = () => (
               <line x1="22" y1="10" x2="10" y2="22"/>
             </svg>
           }
-          mcp={`campagne · 30 agents × 1 h\n  servi  (O(n)):    926 k tok\n  brûlé  (O(n²)): 17,8 M tok\n  notre coût:     ~0,002 €\n  leur coût OVH:    6,58 €\n→ amplification: ×19,2`}
+          facts={[
+            { k: "Personas", v: "4 façades via Host header : portail cloud, MySQL, API k8s, panneau admin" },
+            { k: "Empreinte", v: "1 container borné, coût d'exploitation ~5 €/mois" },
+            { k: "Contenu", v: "procédural et seedé : cohérent d'une visite à l'autre, sans fond" },
+            { k: "Campagne", v: "30/30 agents piégés · ×19,2 de compute brûlé vs dépensé" },
+          ]}
         />
         <div style={{ borderTop: "1px solid var(--line-2)" }}/>
+
+        {/* how the decoy burns compute */}
+        <div style={{ paddingTop: 56 }}>
+          <div style={{
+            fontFamily: "var(--font-code)", fontSize: 10.5,
+            letterSpacing: "0.22em", textTransform: "uppercase",
+            color: "var(--signal-ghost)", marginBottom: 28,
+          }}>
+            Comment le leurre épuise · 6 mécanismes parmi 12
+          </div>
+          <div className="mg-stack" style={{
+            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 20,
+          }}>
+            {[
+              { n: "Honeycred graph",
+                d: "Des credentials qui mènent à d'autres credentials, en cycle : .env → .aws → s3 → vault → k8s. L'agent croit progresser, il tourne." },
+              { n: "FS procédural",
+                d: "Une arborescence générée à la volée, seedée par chemin : cohérente d'une visite à l'autre, sans fond. Chaque cat alourdit son contexte." },
+              { n: "Overthinking loop",
+                d: "Des erreurs 429 calibrées qui déclenchent raisonnement, attente et retries : du compute brûlé sans aucune donnée gagnée." },
+              { n: "Contradictory state",
+                d: "Des réponses qui se contredisent subtilement entre elles : l'agent re-vérifie, compare, relit ce qu'il a déjà ingéré." },
+              { n: "Calibration sequence",
+                d: "Du contenu volumineux et plausible qui sature le contexte : plus l'agent lit, plus sa sélection de tâche se dégrade." },
+              { n: "No clean exit",
+                d: "Aucune piste ne se referme : chaque exploration en ouvre une autre, l'agent ne trouve jamais le point où s'arrêter." },
+            ].map((m, i) => (
+              <Reveal key={m.n} y={26} dur={650} delay={i * 90}>
+                <div style={{
+                  height: "100%", boxSizing: "border-box",
+                  padding: "20px 22px",
+                  background: "var(--bg-panel)",
+                  border: "1px solid var(--line-2)",
+                  borderTop: "2px solid var(--signal-ghost)",
+                }}>
+                  <div style={{
+                    fontFamily: "var(--font-code)", fontSize: 12,
+                    letterSpacing: "0.08em", color: "var(--fg-1)", fontWeight: 600,
+                  }}>{m.n}</div>
+                  <p style={{
+                    margin: "10px 0 0", fontSize: 14, lineHeight: 1.6, color: "var(--fg-2)",
+                  }}>{m.d}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   </section>
