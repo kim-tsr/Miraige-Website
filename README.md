@@ -1,6 +1,6 @@
 # Mir[AI]ge — website
 
-Static marketing landing page + a mission-control mockup for [Mir[AI]ge](https://github.com/kim-tsr).
+Static marketing landing page and a mission-control mockup for [Mir[AI]ge](https://github.com/kim-tsr).
 No build step: plain HTML, the MIR[AI]GE design tokens (`colors_and_type.css` + `fonts/`),
 and React loaded from a CDN with Babel transpiling the `.jsx` files in the browser.
 
