@@ -147,7 +147,7 @@ const TopologyMap = ({ phase = "idle" }) => {
   return (
     <div
       style={{
-        position: "relative", flex: 1, minHeight: 0,
+        position: "relative", width: "100%", height: "100%",
         background: "var(--bg-deep-panel)",
         backgroundImage:
           "linear-gradient(var(--line-on-deep-1) 1px, transparent 1px), " +

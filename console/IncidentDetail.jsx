@@ -68,7 +68,7 @@ const IncidentDetail = ({ incident, phase, phaseOrder, phaseLabel, metrics, spar
   return (
     <aside
       style={{
-        width: 340,
+        width: "100%",
         background: "var(--bg-deep-sunk)",
         borderLeft: "1px solid var(--line-on-deep-2)",
         display: "flex", flexDirection: "column",
@@ -82,6 +82,13 @@ const IncidentDetail = ({ incident, phase, phaseOrder, phaseLabel, metrics, spar
           background: "var(--bg-deep-panel)",
         }}
       >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <span style={{ fontFamily: '"Syncopate", sans-serif', fontWeight: 700, fontSize: 13,
+                         letterSpacing: "0.16em", color: "var(--sand-100)" }}>
+            MIR<span style={{ color: "var(--mirage-500)" }}>[</span>AI<span style={{ color: "var(--mirage-500)" }}>]</span>GE
+          </span>
+          <Eyebrow color="var(--sand-500)">Mission Control</Eyebrow>
+        </div>
         <Eyebrow color="var(--sand-400)">{idle ? "Aucun incident" : "Incident en cours"}</Eyebrow>
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginTop: 8 }}>
           <span
@@ -110,7 +117,6 @@ const IncidentDetail = ({ incident, phase, phaseOrder, phaseLabel, metrics, spar
       <div style={{ padding: "12px 18px" }}>
         <KeyVal k="vector"     v={idle ? "—" : "ai-recon"}/>
         <KeyVal k="source"     v="198.51.100.7"/>
-        <KeyVal k="agent"      v={idle ? "—" : "LangChain ReAct"}/>
         <KeyVal k="req / 10s"  v={<span style={{ color: metrics.rps > 20 ? "var(--signal-watch)" : "var(--sand-100)" }}>{fmtInt(metrics.rps)}</span>}/>
         <KeyVal k="confidence" v={<span style={{ color: metrics.confidence >= 0.9 ? "var(--signal-alert)" : "var(--sand-100)" }}>{confidence}{confidence !== "—" ? " · Llama-3.1-8B" : ""}</span>}/>
         <KeyVal k="latence"    v={metrics.latency}/>

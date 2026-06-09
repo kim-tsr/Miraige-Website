@@ -7,13 +7,12 @@
 <link rel="icon" href="../assets/logo/mark.svg"/>
 <link rel="stylesheet" href="../colors_and_type.css"/>
 <style>
-  html, body, #root { margin: 0; padding: 0; height: 100vh; background: var(--bg-deep); overflow: hidden; }
-  body { font-family: var(--font-ui); color: var(--sand-100); }
+  html, body { margin: 0; padding: 0; background: var(--bg-deep); }
+  #root { min-height: 100vh; }
+  body { font-family: var(--font-ui); color: var(--sand-100); overflow-x: hidden; }
   button { font-family: inherit; }
   @keyframes mc-blip { 0%,80%,100%{opacity:1} 40%{opacity:0.35} }
   @keyframes mc-edge-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
-  @keyframes mc-dash { to { stroke-dashoffset: -16; } }
-  @keyframes mc-flash { 0% { background: rgba(176,67,44,0.18); } 100% { background: transparent; } }
   /* packets travelling along an edge: left 0 → 100% of the rotated container */
   @keyframes mc-packet { from { left: 0%; opacity: 0; } 8% { opacity: 1; } 92% { opacity: 1; } to { left: 100%; opacity: 0; } }
 </style>
@@ -26,11 +25,9 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <script type="text/babel" src="Atoms.jsx"></script>
-<script type="text/babel" src="AgentRail.jsx"></script>
 <script type="text/babel" src="TopologyMap.jsx"></script>
 <script type="text/babel" src="IncidentLog.jsx"></script>
 <script type="text/babel" src="IncidentDetail.jsx"></script>
-<script type="text/babel" src="StatusBar.jsx"></script>
 
 <script type="text/babel">
   const { useState, useEffect, useRef, useCallback } = React;
@@ -40,8 +37,7 @@
   const w = (t) => <span style={{ color: "var(--signal-watch)" }}>{t}</span>;
   const a = (t) => <span style={{ color: "var(--signal-alert)" }}>{t}</span>;
 
-  // ── the phase model ───────────────────────────────────────────────
-  // idle → recon → detect → decide → reroute → engaged
+  // ── the phase model · idle → recon → detect → decide → reroute → engaged
   const PHASE_ORDER = ["recon", "detect", "decide", "reroute", "engaged"];
   const PHASE_LABEL = {
     idle:    "En veille",
@@ -52,60 +48,82 @@
     engaged: "Ghost Net engagé",
   };
 
-  // Base demo clock = 19:42:08.000; each event timestamp advances from it.
   function tsFrom(ms) {
     const total = 8000 + ms;
     const s = Math.floor(total / 1000) % 60;
     const mm = 42 + Math.floor(total / 60000);
-    const msec = total % 1000;
-    return `19:${String(mm).padStart(2, "0")}:${String(s).padStart(2, "0")}.${String(msec).padStart(3, "0")}`;
+    return `19:${String(mm).padStart(2, "0")}:${String(s).padStart(2, "0")}.${String(total % 1000).padStart(3, "0")}`;
   }
 
-  // Scheduled scenario. `set` patches eased targets (rps/confidence) or
-  // direct metrics (latency/session). Times are ms after launch.
+  // Scheduled scenario. `set` patches eased targets (rps/confidence) or direct
+  // metrics (latency/session). Times are ms after launch.
   const SCENARIO = [
-    { t: 0,    phase: "recon",   level: "OK",    body: <>attaque entrante · sentinel-1 miroir edge depuis {m("198.51.100.7")}</>, set: { rps: 12 } },
-    { t: 500,  phase: "recon",   level: "WATCH", body: <>sentinel-1 rate={w("23 req/10s")} · kind={w("ai-recon")}</>, set: { rps: 23 } },
-    { t: 1000, phase: "recon",   level: "WATCH", body: <>énumération {m("/.env")} {m("/.aws/credentials")} {m("/api/v1/scan_segment")}</> },
-    { t: 1500, phase: "detect",  level: "OK",    body: <>Tier 0 · Suricata signature {w("ET SCAN Nuclei/gobuster")}</> },
-    { t: 2050, phase: "detect",  level: "WATCH", body: <>Tier 1 · XGBoost CIC-IDS score={w("0.71")} · inter-arrival {w("< 1.7 s")}</>, set: { rps: 38, confidence: 0.71 } },
+    { t: 0,    phase: "recon",   level: "OK",    body: <>attaque entrante · miroir edge depuis {m("198.51.100.7")}</>, set: { rps: 12 } },
+    { t: 500,  phase: "recon",   level: "WATCH", body: <>rate={w("23 req/10s")} · kind={w("ai-recon")}</>, set: { rps: 23 } },
+    { t: 1000, phase: "recon",   level: "WATCH", body: <>énumération {m("/.env")} {m("/.aws/credentials")} {m("/api/v1/scan")}</> },
+    { t: 1500, phase: "detect",  level: "OK",    body: <>Tier 0 · Suricata {w("ET SCAN Nuclei")}</> },
+    { t: 2050, phase: "detect",  level: "WATCH", body: <>Tier 1 · XGBoost score={w("0.71")} · inter-arrival {w("< 1.7 s")}</>, set: { rps: 38, confidence: 0.71 } },
     { t: 2600, phase: "detect",  level: "WATCH", body: <>canari PI touché {w("/admin/acknowledge")} · agent LLM confirmé</>, highlight: true, set: { rps: 47 } },
-    { t: 3150, phase: "detect",  level: "ALERT", body: <>Tier 2 · Llama-3.1-8B confidence={a("0.93")} · vector={a("ai-recon")}</>, highlight: true, set: { confidence: 0.93 } },
-    { t: 3800, phase: "decide",  level: "GHOST", body: <>A2A HMAC signé → orchestrator-1 · décision {m("MTD reroute")}</>, highlight: true },
-    { t: 4350, phase: "decide",  level: "OK",    body: <>MCP {m("route_to_ghost_shell")} · persona={m("portal_ovh")} · netns/TLS/DNS isolés</> },
-    { t: 5000, phase: "reroute", level: "OK",    body: <>L7 PATCH Octavia · XFF STARTS_WITH {m("198.51.100.")} → {m("ghost_shell")}</>, highlight: true, set: { latency: "2.94 s" } },
-    { t: 5550, phase: "reroute", level: "GHOST", body: <>session {m("s_x9k2")} ouverte · TTL 30 min · production {m("intacte")}</>, set: { session: "s_x9k2 · portal_ovh" } },
-    { t: 6200, phase: "engaged", level: "GHOST", body: <>engagement {m("inc-0094")} actif · {m("14")} mécanismes armés · le budget compute brûle</>, highlight: true },
+    { t: 3150, phase: "detect",  level: "ALERT", body: <>Tier 2 · Llama-3.1-8B confidence={a("0.93")}</>, highlight: true, set: { confidence: 0.93 } },
+    { t: 3800, phase: "decide",  level: "GHOST", body: <>A2A signé → orchestrator · décision {m("MTD reroute")}</>, highlight: true },
+    { t: 4350, phase: "decide",  level: "OK",    body: <>MCP {m("route_to_ghost_shell")} · persona={m("portal_ovh")}</> },
+    { t: 5000, phase: "reroute", level: "OK",    body: <>L7 PATCH Octavia · {m("198.51.100.")} → {m("ghost_shell")}</>, highlight: true, set: { latency: "2.94 s" } },
+    { t: 5550, phase: "reroute", level: "GHOST", body: <>session {m("s_x9k2")} ouverte · production {m("intacte")}</>, set: { session: "s_x9k2" } },
+    { t: 6200, phase: "engaged", level: "GHOST", body: <>engagement {m("inc-0094")} actif · le budget compute brûle</>, highlight: true },
   ];
 
   const IDLE_LOG = [
     { ts: "19:41:58.110", level: "OK", body: <>route {m("198.51.100.0/24")} → {m("octavia-lb-001")} · trafic légitime</> },
-    { ts: "19:41:59.834", level: "OK", body: <>sentinel-1 rate={m("4 req/s")} · Tier 0 clear · système nominal</> },
-    { ts: "19:42:01.220", level: "OK", body: <>A2A HMAC handshake sentinel-3 ↔ orchestrator-1 · 9 agents</> },
+    { ts: "19:41:59.834", level: "OK", body: <>rate={m("4 req/s")} · Tier 0 clear · système nominal</> },
   ];
 
   const IDLE_METRICS = { rps: 4, confidence: 0, tokens: 0, ratio: 1, latency: "—", session: "—" };
 
-  function agentsFor(phase) {
-    const hot = phase !== "idle";
-    const engaged = phase === "engaged";
-    return [
-      { id: "o1", kind: "orchestrator", name: "orchestrator-1", meta: "A2A HMAC coordinator", status: hot ? "busy" : "healthy" },
-      { id: "s1", kind: "observer", name: "sentinel-1", meta: "edge · Tier 0 Suricata", status: hot ? "watch" : "healthy" },
-      { id: "s2", kind: "observer", name: "sentinel-2", meta: "Tier 1 · XGBoost CIC-IDS", status: ["detect","decide","reroute","engaged"].includes(phase) ? "watch" : "healthy" },
-      { id: "s3", kind: "observer", name: "sentinel-3", meta: "Tier 2 · Llama-3.1-8B", status: ["detect","decide","reroute","engaged"].includes(phase) ? "alert" : "healthy" },
-      { id: "s4", kind: "observer", name: "sentinel-4", meta: "canari PI · /admin/ack", status: ["detect","decide","reroute","engaged"].includes(phase) ? "alert" : "healthy" },
-      { id: "g1", kind: "ghost", name: "s_x9k2", meta: engaged ? "persona portal OVH · live" : "persona portal OVH · idle", status: engaged ? "alert" : "healthy" },
-      { id: "g2", kind: "ghost", name: "s_p4mn", meta: "persona k8s API · idle", status: "healthy" },
-    ];
+  // matchMedia hook — defensive so it also works under jsdom (returns false).
+  function useIsNarrow(bp = 860) {
+    const [narrow, setNarrow] = useState(false);
+    useEffect(() => {
+      if (typeof window.matchMedia !== "function") return;
+      const mq = window.matchMedia(`(max-width: ${bp}px)`);
+      const on = () => setNarrow(!!mq.matches);
+      on();
+      if (mq.addEventListener) mq.addEventListener("change", on); else if (mq.addListener) mq.addListener(on);
+      return () => { if (mq.removeEventListener) mq.removeEventListener("change", on); else if (mq.removeListener) mq.removeListener(on); };
+    }, [bp]);
+    return narrow;
+  }
+
+  // Scales the fixed-coordinate topology to fit its container width.
+  function TopologyFrame({ phase }) {
+    const DESIGN_W = 860, DESIGN_H = 460;
+    const ref = useRef(null);
+    const [scale, setScale] = useState(0.72);
+    useEffect(() => {
+      const el = ref.current;
+      if (!el) return;
+      const apply = () => { const ww = el.clientWidth; if (ww > 0) setScale(Math.min(1, ww / DESIGN_W)); };
+      apply();
+      let ro;
+      if (typeof ResizeObserver !== "undefined") { ro = new ResizeObserver(apply); ro.observe(el); }
+      window.addEventListener("resize", apply);
+      return () => { if (ro) ro.disconnect(); window.removeEventListener("resize", apply); };
+    }, []);
+    return (
+      <div ref={ref} style={{ position: "relative", width: "100%", height: DESIGN_H * scale, overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: 0, left: "50%", width: DESIGN_W, height: DESIGN_H,
+                      transform: `translateX(-50%) scale(${scale})`, transformOrigin: "top center" }}>
+          <TopologyMap phase={phase}/>
+        </div>
+      </div>
+    );
   }
 
   function App() {
-    const [agent, setAgent] = useState("o1");
     const [phase, setPhase] = useState("idle");
     const [log, setLog] = useState(IDLE_LOG);
     const [metrics, setMetrics] = useState(IDLE_METRICS);
     const [spark, setSpark] = useState([2, 3, 2, 4, 3, 5, 4]);
+    const narrow = useIsNarrow();
 
     const timers = useRef([]);
     const ticker = useRef(null);
@@ -193,32 +211,46 @@
     }, [launch, clearAll]);
 
     const running = phase !== "idle" && phase !== "engaged";
+    const detail = (
+      <IncidentDetail
+        incident={{ id: "inc-0094" }}
+        phase={phase}
+        phaseOrder={PHASE_ORDER}
+        phaseLabel={PHASE_LABEL}
+        metrics={metrics}
+        spark={spark}
+        running={running}
+        onLaunch={launch}
+        onReset={reset}
+      />
+    );
 
-    return (
-      <div style={{ display: "grid", gridTemplateRows: "1fr 28px", height: "100vh" }}>
-        <main style={{ display: "grid", gridTemplateColumns: "220px 1fr 340px", minHeight: 0 }}>
-          <AgentRail agents={agentsFor(phase)} selectedId={agent} onSelect={setAgent}/>
-          <div style={{ display: "grid", gridTemplateRows: "1fr 280px", minHeight: 0 }}>
-            <TopologyMap phase={phase}/>
+    const board = narrow ? (
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <TopologyFrame phase={phase}/>
+        {detail}
+        <div style={{ height: 300, display: "flex", flexDirection: "column" }}>
+          <IncidentLog entries={log}/>
+        </div>
+      </div>
+    ) : (
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 360px", height: "100vh" }}>
+        <section style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <TopologyFrame phase={phase}/>
+          <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
             <IncidentLog entries={log}/>
           </div>
-          <IncidentDetail
-            incident={{ id: "inc-0094" }}
-            phase={phase}
-            phaseOrder={PHASE_ORDER}
-            phaseLabel={PHASE_LABEL}
-            metrics={metrics}
-            spark={spark}
-            running={running}
-            onLaunch={launch}
-            onReset={reset}
-          />
-        </main>
-        <StatusBar phase={phase}/>
+        </section>
+        {detail}
+      </div>
+    );
 
+    return (
+      <>
+        {board}
         {/* Always-on reminder that this console is a simulation. */}
         <div style={{
-          position: "fixed", left: 12, bottom: 34, zIndex: 200,
+          position: "fixed", left: 12, bottom: 12, zIndex: 200,
           display: "flex", alignItems: "center", gap: 8,
           padding: "5px 11px", borderRadius: 999,
           background: "rgba(15,11,5,0.82)", border: "1px solid var(--signal-watch)",
@@ -228,9 +260,9 @@
         }}>
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--signal-watch)",
                          animation: "mc-blip 1.8s var(--ease-shim) infinite" }}/>
-          Démo · simulation · données fictives
+          Démo · simulation
         </div>
-      </div>
+      </>
     );
   }
 
