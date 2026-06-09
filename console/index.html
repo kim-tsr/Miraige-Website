@@ -26,7 +26,6 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <script type="text/babel" src="Atoms.jsx"></script>
-<script type="text/babel" src="ConsoleNav.jsx"></script>
 <script type="text/babel" src="AgentRail.jsx"></script>
 <script type="text/babel" src="TopologyMap.jsx"></script>
 <script type="text/babel" src="IncidentLog.jsx"></script>
@@ -102,13 +101,11 @@
   }
 
   function App() {
-    const [tab, setTab] = useState("Console");
     const [agent, setAgent] = useState("o1");
     const [phase, setPhase] = useState("idle");
     const [log, setLog] = useState(IDLE_LOG);
     const [metrics, setMetrics] = useState(IDLE_METRICS);
     const [spark, setSpark] = useState([2, 3, 2, 4, 3, 5, 4]);
-    const [clock, setClock] = useState("19:42:08");
 
     const timers = useRef([]);
     const ticker = useRef(null);
@@ -187,16 +184,6 @@
       }, 120);
     }, [clearAll]);
 
-    // Wall clock (always ticking, fictional 19:42 base).
-    useEffect(() => {
-      let s = 8;
-      const id = setInterval(() => {
-        s = (s + 1) % 60;
-        setClock(`19:42:${String(s).padStart(2, "0")}`);
-      }, 1000);
-      return () => clearInterval(id);
-    }, []);
-
     // Autoplay when reached via /demo (?autoplay=1) — and clean up on unmount.
     useEffect(() => {
       const auto = new URLSearchParams(window.location.search).get("autoplay");
@@ -208,8 +195,7 @@
     const running = phase !== "idle" && phase !== "engaged";
 
     return (
-      <div style={{ display: "grid", gridTemplateRows: "56px 1fr 28px", height: "100vh" }}>
-        <ConsoleNav activeTab={tab} onTab={setTab} clock={clock} phase={phase} phaseLabel={PHASE_LABEL[phase]}/>
+      <div style={{ display: "grid", gridTemplateRows: "1fr 28px", height: "100vh" }}>
         <main style={{ display: "grid", gridTemplateColumns: "220px 1fr 340px", minHeight: 0 }}>
           <AgentRail agents={agentsFor(phase)} selectedId={agent} onSelect={setAgent}/>
           <div style={{ display: "grid", gridTemplateRows: "1fr 280px", minHeight: 0 }}>

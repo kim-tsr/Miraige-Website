@@ -32,7 +32,7 @@ const LandingNav = () => (
       fontFamily: "var(--font-ui)", fontWeight: 500,
       fontSize: 11.5, letterSpacing: "0.22em", textTransform: "uppercase",
     }}>
-      <a href="/console/" style={{ color: "var(--fg-2)", textDecoration: "none" }}>Console</a>
+      <a href="#whitepaper" style={{ color: "var(--fg-2)", textDecoration: "none" }}>Whitepaper</a>
       <a href="/demo/" style={{
         color: "var(--sand-50)", background: "var(--sand-900)",
         padding: "8px 14px", borderRadius: 4, textDecoration: "none",
