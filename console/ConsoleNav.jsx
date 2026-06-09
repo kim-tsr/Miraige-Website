@@ -1,8 +1,13 @@
 /* eslint-disable react/prop-types */
 /* ConsoleNav — top nav with wordmark, tabs, region clock, system pill. */
 
-const ConsoleNav = ({ activeTab, onTab, clock, systemHealthy = true }) => {
+const ConsoleNav = ({ activeTab, onTab, clock, phase = "idle", phaseLabel }) => {
   const tabs = ["Console", "Incidents", "Ghost Net", "Agents", "Settings"];
+  const pill = phase === "idle"
+    ? { kind: "ok", text: "System nominal" }
+    : phase === "engaged"
+      ? { kind: "ghost", text: "Menace contenue" }
+      : { kind: "alert", text: phaseLabel || "Incident" };
   return (
     <header
       style={{
@@ -59,8 +64,8 @@ const ConsoleNav = ({ activeTab, onTab, clock, systemHealthy = true }) => {
         {clock} UTC · OVH-GRA
       </span>
 
-      <StatusPill kind={systemHealthy ? "ok" : "alert"} pulse>
-        {systemHealthy ? "System nominal" : "Degraded"}
+      <StatusPill kind={pill.kind} pulse>
+        {pill.text}
       </StatusPill>
     </header>
   );

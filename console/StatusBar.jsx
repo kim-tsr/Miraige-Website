@@ -1,7 +1,10 @@
 /* eslint-disable react/prop-types */
 /* StatusBar — bottom build / uptime / region strip. */
 
-const StatusBar = () => (
+const StatusBar = ({ phase = "idle" }) => {
+  const engaged = phase === "engaged";
+  const attack = phase !== "idle";
+  return (
   <footer
     style={{
       height: 28, padding: "0 16px",
@@ -15,12 +18,12 @@ const StatusBar = () => (
     <span style={{ display: "flex", gap: 22 }}>
       <span>
         <span style={{ color: "var(--mirage-300)" }}>orchestrator-1</span>{" "}
-        healthy · 9 agents
+        {attack ? "busy" : "healthy"} · 9 agents
       </span>
       <span>vRack <span style={{ color: "var(--sand-100)" }}>3201</span>,{" "}
         <span style={{ color: "var(--sand-100)" }}>3204</span>,{" "}
         <span style={{ color: "var(--sand-100)" }}>3210</span></span>
-      <span>Ghost Net pool · <span style={{ color: "var(--signal-ghost)" }}>2 / 32</span></span>
+      <span>Ghost Net pool · <span style={{ color: "var(--signal-ghost)" }}>{engaged ? "3 / 32" : "2 / 32"}</span></span>
     </span>
     <span style={{ display: "flex", gap: 22 }}>
       <span>uptime 14d 02:11</span>
@@ -28,6 +31,7 @@ const StatusBar = () => (
       <span>OVH-GRA · region eu-west-paris</span>
     </span>
   </footer>
-);
+  );
+};
 
 Object.assign(window, { StatusBar });

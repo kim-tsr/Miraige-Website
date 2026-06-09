@@ -99,19 +99,32 @@ const Edge = ({ from, to, color = "var(--sand-400)", dashed, animated }) => {
   );
 };
 
-const TopologyMap = ({ ghostNetActive }) => {
+const TopologyMap = ({ phase = "idle" }) => {
+  const attackActive = phase !== "idle";
+  const detecting = phase === "detect" || phase === "decide";
+  const diverted = phase === "reroute" || phase === "engaged";
+  const ghostLive = phase === "engaged";
+
   // Static-ish coordinates inside an absolutely-positioned canvas.
   // Keeping all positions here so the layout is data-driven.
   const N = {
     client:     { x: 80,  y: 140, kind: "host",         label: "client",          sub: "203.0.113.41", color: "var(--sand-100)" },
-    attacker:   { x: 80,  y: 320, kind: "host",         label: "attaquant",       sub: "198.51.100.7", color: "var(--signal-alert)" },
+    attacker:   { x: 80,  y: 320, kind: "host",         label: "attaquant",       sub: "198.51.100.7", color: attackActive ? "var(--signal-alert)" : "var(--sand-400)" },
     vrack:      { x: 320, y: 230, kind: "vrack",        label: "vrack-3201",      sub: "vlan 4087",     color: "var(--sand-100)" },
     orch:       { x: 540, y: 230, kind: "orchestrator", label: "orchestrator-1",  sub: "A2A · live",    color: "var(--mirage-300)" },
     obs1:       { x: 540, y: 80,  kind: "observer",     label: "observer-1",      sub: "edge mirror",   color: "var(--sand-100)" },
-    obs3:       { x: 720, y: 80,  kind: "observer",     label: "observer-3",      sub: "score 0.94",    color: "var(--signal-watch)" },
-    prod:       { x: 780, y: 230, kind: "vrack",        label: "vrack-3210",      sub: "10.42.7.0/24 · prod", color: "var(--sand-100)" },
-    ghost:      { x: 780, y: 400, kind: "ghost",        label: "gn-0094",         sub: "Ghost Net · live",     color: "var(--signal-ghost)" },
+    obs3:       { x: 720, y: 80,  kind: "observer",     label: "observer-3",      sub: detecting || diverted ? "score 0.93" : "idle", color: detecting || diverted ? "var(--signal-watch)" : "var(--sand-400)" },
+    prod:       { x: 780, y: 230, kind: "vrack",        label: "vrack-3210",      sub: diverted ? "10.42.7.0/24 · intacte" : "10.42.7.0/24 · prod", color: diverted ? "var(--signal-ok)" : "var(--sand-100)" },
+    ghost:      { x: 780, y: 400, kind: "ghost",        label: "gn-0094",         sub: ghostLive ? "Ghost Net · live" : "Ghost Net · armé", color: "var(--signal-ghost)" },
   };
+
+  const statePill = !attackActive
+    ? <StatusPill kind="mirage" pulse>A2A · 9 agents</StatusPill>
+    : ghostLive
+      ? <StatusPill kind="ghost" pulse>Trafic dérouté → Ghost Net</StatusPill>
+      : diverted
+        ? <StatusPill kind="ghost" pulse>L7 PATCH en cours…</StatusPill>
+        : <StatusPill kind="alert" pulse>Attaque · {phase === "recon" ? "recon" : "détection"}</StatusPill>;
 
   return (
     <div
@@ -131,32 +144,33 @@ const TopologyMap = ({ ghostNetActive }) => {
         <Eyebrow color="var(--sand-400)">Topology · live · vrack 3201–3210</Eyebrow>
       </div>
       <div style={{ position: "absolute", right: 20, top: 16, zIndex: 4 }}>
-        <StatusPill kind="mirage" pulse>A2A · 9 agents</StatusPill>
+        {statePill}
       </div>
 
-      {/* edges - legitimate flow */}
+      {/* edges - legitimate flow (always healthy) */}
       <Edge from={N.client}   to={N.vrack} color="var(--signal-ok)"/>
       <Edge from={N.vrack}    to={N.prod}  color="var(--signal-ok)"/>
       {/* observer hookups */}
       <Edge from={N.obs1}     to={N.orch}  color="var(--sand-500)" dashed/>
-      <Edge from={N.obs3}     to={N.orch}  color="var(--signal-watch)" animated/>
+      <Edge from={N.obs3}     to={N.orch}  color={detecting || diverted ? "var(--signal-watch)" : "var(--sand-500)"} dashed={!(detecting || diverted)} animated={detecting || diverted}/>
       {/* orchestrator -> infra control */}
       <Edge from={N.orch}     to={N.vrack} color="var(--mirage-500)"/>
       <Edge from={N.orch}     to={N.prod}  color="var(--mirage-500)"/>
-      {/* hostile traffic (red) currently diverted -> ghost */}
-      {ghostNetActive && (
+      {/* hostile traffic */}
+      {diverted ? (
         <>
-          <Edge from={N.attacker} to={N.ghost} color="var(--signal-alert)"/>
+          <Edge from={N.attacker} to={N.ghost} color="var(--signal-alert)" animated={phase === "reroute"}/>
           <Edge from={N.orch}     to={N.ghost} color="var(--mirage-500)" dashed animated/>
         </>
-      )}
-      {!ghostNetActive && (
-        <Edge from={N.attacker} to={N.vrack} color="var(--signal-alert)"/>
+      ) : attackActive ? (
+        <Edge from={N.attacker} to={N.vrack} color="var(--signal-alert)" animated/>
+      ) : (
+        <Edge from={N.attacker} to={N.vrack} color="var(--sand-500)" dashed/>
       )}
 
       {/* nodes */}
       {Object.entries(N).map(([k, v]) => (
-        <TopoNode key={k} {...v} glow={k === "orch"}/>
+        <TopoNode key={k} {...v} glow={k === "orch" || (k === "ghost" && ghostLive)}/>
       ))}
     </div>
   );
