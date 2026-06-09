@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* LandingNav — minimal: wordmark + a single contact link. */
+/* LandingNav — responsive: wordmark + contact + console redirect. */
 
 const LandingNav = () => (
   <nav className="mg-pad" style={{
@@ -20,11 +20,17 @@ const LandingNav = () => (
       AI
       <span style={{ color: "var(--mirage-500)" }}>]</span>GE
     </a>
-    <a href="#invitation" style={{
+    <div style={{
+      display: "flex", gap: 22, alignItems: "center",
       fontFamily: "var(--font-ui)", fontWeight: 500,
       fontSize: 11.5, letterSpacing: "0.22em", textTransform: "uppercase",
-      color: "var(--fg-2)", textDecoration: "none",
-    }}>Contact</a>
+    }}>
+      <a href="#invitation" style={{ color: "var(--fg-2)", textDecoration: "none" }}>Contact</a>
+      <a href="/console/" style={{
+        color: "var(--sand-50)", background: "var(--sand-900)",
+        padding: "8px 14px", borderRadius: 4, textDecoration: "none",
+      }}>Console —&gt;</a>
+    </div>
   </nav>
 );
 

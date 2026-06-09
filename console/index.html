@@ -2,14 +2,19 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>MIR[AI]GE · Mission Control</title>
+<link rel="icon" href="../assets/logo/mark.svg"/>
 <link rel="stylesheet" href="../colors_and_type.css"/>
 <style>
-  html, body, #root { margin: 0; padding: 0; height: 100vh; background: var(--bg-deep); overflow: hidden; }
-  body { font-family: var(--font-ui); color: var(--sand-100); }
+  html, body { margin: 0; padding: 0; background: var(--bg-deep); }
+  #root { min-height: 100vh; }
+  body { font-family: var(--font-ui); color: var(--sand-100); overflow-x: hidden; }
   button { font-family: inherit; }
   @keyframes mc-blip { 0%,80%,100%{opacity:1} 40%{opacity:0.35} }
   @keyframes mc-edge-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  /* packets travelling along an edge: left 0 → 100% of the rotated container */
+  @keyframes mc-packet { from { left: 0%; opacity: 0; } 8% { opacity: 1; } 92% { opacity: 1; } to { left: 100%; opacity: 0; } }
 </style>
 </head>
 <body>
@@ -20,78 +25,244 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <script type="text/babel" src="Atoms.jsx"></script>
-<script type="text/babel" src="ConsoleNav.jsx"></script>
-<script type="text/babel" src="AgentRail.jsx"></script>
 <script type="text/babel" src="TopologyMap.jsx"></script>
 <script type="text/babel" src="IncidentLog.jsx"></script>
 <script type="text/babel" src="IncidentDetail.jsx"></script>
-<script type="text/babel" src="StatusBar.jsx"></script>
 
 <script type="text/babel">
-  const { useState, useEffect } = React;
+  const { useState, useEffect, useRef, useCallback } = React;
 
-  const AGENTS = [
-    { id: "o1",  kind: "orchestrator", name: "orchestrator-1", meta: "A2A HMAC coordinator", status: "busy" },
-    { id: "s1",  kind: "observer",     name: "sentinel-1",     meta: "edge · Tier 0 Suricata",       status: "healthy" },
-    { id: "s2",  kind: "observer",     name: "sentinel-2",     meta: "Tier 1 · XGBoost CIC-IDS",     status: "healthy" },
-    { id: "s3",  kind: "observer",     name: "sentinel-3",     meta: "Tier 2 · Llama-3.1-8B · 0.93", status: "watch" },
-    { id: "s4",  kind: "observer",     name: "sentinel-4",     meta: "canary PI · /admin/ack",       status: "alert" },
-    { id: "g1",  kind: "ghost",        name: "s_x9k2",         meta: "persona portal OVH · live",    status: "alert" },
-    { id: "g2",  kind: "ghost",        name: "s_p4mn",         meta: "persona k8s API · idle",       status: "healthy" },
+  // ── coloured log fragments ────────────────────────────────────────
+  const m = (t) => <span style={{ color: "var(--mirage-300)" }}>{t}</span>;
+  const w = (t) => <span style={{ color: "var(--signal-watch)" }}>{t}</span>;
+  const a = (t) => <span style={{ color: "var(--signal-alert)" }}>{t}</span>;
+
+  // ── the phase model · idle → recon → detect → decide → reroute → engaged
+  const PHASE_ORDER = ["recon", "detect", "decide", "reroute", "engaged"];
+  const PHASE_LABEL = {
+    idle:    "En veille",
+    recon:   "Reconnaissance",
+    detect:  "Détection T0·T1·T2",
+    decide:  "Décision A2A",
+    reroute: "Reroutage L7",
+    engaged: "Ghost Net engagé",
+  };
+
+  function tsFrom(ms) {
+    const total = 8000 + ms;
+    const s = Math.floor(total / 1000) % 60;
+    const mm = 42 + Math.floor(total / 60000);
+    return `19:${String(mm).padStart(2, "0")}:${String(s).padStart(2, "0")}.${String(total % 1000).padStart(3, "0")}`;
+  }
+
+  // Scheduled scenario. `set` patches eased targets (rps/confidence) or direct
+  // metrics (latency/session). Times are ms after launch.
+  const SCENARIO = [
+    { t: 0,    phase: "recon",   level: "OK",    body: <>attaque entrante · miroir edge depuis {m("198.51.100.7")}</>, set: { rps: 12 } },
+    { t: 500,  phase: "recon",   level: "WATCH", body: <>rate={w("23 req/10s")} · kind={w("ai-recon")}</>, set: { rps: 23 } },
+    { t: 1000, phase: "recon",   level: "WATCH", body: <>énumération {m("/.env")} {m("/.aws/credentials")} {m("/api/v1/scan")}</> },
+    { t: 1500, phase: "detect",  level: "OK",    body: <>Tier 0 · Suricata {w("ET SCAN Nuclei")}</> },
+    { t: 2050, phase: "detect",  level: "WATCH", body: <>Tier 1 · XGBoost score={w("0.71")} · inter-arrival {w("< 1.7 s")}</>, set: { rps: 38, confidence: 0.71 } },
+    { t: 2600, phase: "detect",  level: "WATCH", body: <>canari PI touché {w("/admin/acknowledge")} · agent LLM confirmé</>, highlight: true, set: { rps: 47 } },
+    { t: 3150, phase: "detect",  level: "ALERT", body: <>Tier 2 · Llama-3.1-8B confidence={a("0.93")}</>, highlight: true, set: { confidence: 0.93 } },
+    { t: 3800, phase: "decide",  level: "GHOST", body: <>A2A signé → orchestrator · décision {m("MTD reroute")}</>, highlight: true },
+    { t: 4350, phase: "decide",  level: "OK",    body: <>MCP {m("route_to_ghost_shell")} · persona={m("portal_ovh")}</> },
+    { t: 5000, phase: "reroute", level: "OK",    body: <>L7 PATCH Octavia · {m("198.51.100.")} → {m("ghost_shell")}</>, highlight: true, set: { latency: "2.94 s" } },
+    { t: 5550, phase: "reroute", level: "GHOST", body: <>session {m("s_x9k2")} ouverte · production {m("intacte")}</>, set: { session: "s_x9k2" } },
+    { t: 6200, phase: "engaged", level: "GHOST", body: <>engagement {m("inc-0094")} actif · le budget compute brûle</>, highlight: true },
   ];
 
-  const BASE_LOG = [
-    { ts: "19:41:58.110", level: "OK",    body: <>route <span style={{color:"var(--mirage-300)"}}>198.51.100.0/24</span> → <span style={{color:"var(--mirage-300)"}}>octavia-lb-001</span></> },
-    { ts: "19:41:59.834", level: "OK",    body: <>sentinel-1 rate=<span style={{color:"var(--mirage-300)"}}>4 req/s</span> · Tier 0 Suricata clear</> },
-    { ts: "19:42:01.220", level: "OK",    body: <>A2A HMAC handshake sentinel-3 ↔ orchestrator-1</> },
-    { ts: "19:42:08.412", level: "WATCH", body: <>sentinel-1 rate=<span style={{color:"var(--mirage-300)"}}>47 req/10s</span> kind=<span style={{color:"var(--signal-watch)"}}>ai-recon</span></> },
-    { ts: "19:42:08.711", level: "WATCH", body: <>canary PI hit <span style={{color:"var(--signal-watch)"}}>/admin/acknowledge</span> · LLM agent confirmé</>, highlight: true },
-    { ts: "19:42:09.611", level: "ALERT", body: <>Llama-3.1-8B confidence=<span style={{color:"var(--mirage-300)"}}>0.93</span> vector=<span style={{color:"var(--signal-alert)"}}>ai-recon</span></>, highlight: true },
+  const IDLE_LOG = [
+    { ts: "19:41:58.110", level: "OK", body: <>route {m("198.51.100.0/24")} → {m("octavia-lb-001")} · trafic légitime</> },
+    { ts: "19:41:59.834", level: "OK", body: <>rate={m("4 req/s")} · Tier 0 clear · système nominal</> },
   ];
 
-  const GHOST_LOG = [
-    { ts: "19:42:10.500", level: "GHOST", body: <>A2A signed → orchestrator-1 · session <span style={{color:"var(--mirage-300)"}}>s_x9k2</span></>, highlight: true },
-    { ts: "19:42:10.850", level: "GHOST", body: <>MCP route_to_ghost_shell · persona=<span style={{color:"var(--mirage-300)"}}>portal_ovh</span> · netns/TLS/DNS isolés</>, highlight: true },
-    { ts: "19:42:11.050", level: "OK",    body: <>L7 PATCH Octavia · XFF STARTS_WITH <span style={{color:"var(--mirage-300)"}}>198.51.100.</span> → <span style={{color:"var(--mirage-300)"}}>ghost_shell</span></> },
-    { ts: "19:42:11.100", level: "OK",    body: <>engagement <span style={{color:"var(--mirage-300)"}}>inc-0094</span> active · TTL 30 min · ratio <span style={{color:"var(--mirage-300)"}}>×19,2</span></> },
-  ];
+  const IDLE_METRICS = { rps: 4, confidence: 0, tokens: 0, ratio: 1, latency: "—", session: "—" };
+
+  // matchMedia hook — defensive so it also works under jsdom (returns false).
+  function useIsNarrow(bp = 860) {
+    const [narrow, setNarrow] = useState(false);
+    useEffect(() => {
+      if (typeof window.matchMedia !== "function") return;
+      const mq = window.matchMedia(`(max-width: ${bp}px)`);
+      const on = () => setNarrow(!!mq.matches);
+      on();
+      if (mq.addEventListener) mq.addEventListener("change", on); else if (mq.addListener) mq.addListener(on);
+      return () => { if (mq.removeEventListener) mq.removeEventListener("change", on); else if (mq.removeListener) mq.removeListener(on); };
+    }, [bp]);
+    return narrow;
+  }
+
+  // Scales the fixed-coordinate topology to fit its container width.
+  function TopologyFrame({ phase }) {
+    const DESIGN_W = 860, DESIGN_H = 460;
+    const ref = useRef(null);
+    const [scale, setScale] = useState(0.72);
+    useEffect(() => {
+      const el = ref.current;
+      if (!el) return;
+      const apply = () => { const ww = el.clientWidth; if (ww > 0) setScale(Math.min(1, ww / DESIGN_W)); };
+      apply();
+      let ro;
+      if (typeof ResizeObserver !== "undefined") { ro = new ResizeObserver(apply); ro.observe(el); }
+      window.addEventListener("resize", apply);
+      return () => { if (ro) ro.disconnect(); window.removeEventListener("resize", apply); };
+    }, []);
+    return (
+      <div ref={ref} style={{ position: "relative", width: "100%", height: DESIGN_H * scale, overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: 0, left: "50%", width: DESIGN_W, height: DESIGN_H,
+                      transform: `translateX(-50%) scale(${scale})`, transformOrigin: "top center" }}>
+          <TopologyMap phase={phase}/>
+        </div>
+      </div>
+    );
+  }
 
   function App() {
-    const [tab, setTab] = useState("Console");
-    const [agent, setAgent] = useState("o1");
-    const [ghost, setGhost] = useState(false);
-    const [clock, setClock] = useState("19:42:08");
+    const [phase, setPhase] = useState("idle");
+    const [log, setLog] = useState(IDLE_LOG);
+    const [metrics, setMetrics] = useState(IDLE_METRICS);
+    const [spark, setSpark] = useState([2, 3, 2, 4, 3, 5, 4]);
+    const narrow = useIsNarrow();
 
-    // Tick the clock 1×/s when ghost is active (visual life signal).
-    useEffect(() => {
-      let s = 8;
-      const id = setInterval(() => {
-        s = (s + 1) % 60;
-        setClock(`19:42:${String(s).padStart(2, "0")}`);
-      }, 1000);
-      return () => clearInterval(id);
+    const timers = useRef([]);
+    const ticker = useRef(null);
+    const targets = useRef({ rps: 4, confidence: 0, ratio: 1 });
+    const phaseRef = useRef("idle");
+    const sparkRef = useRef([2, 3, 2, 4, 3, 5, 4]);
+    const tickN = useRef(0);
+
+    const clearAll = useCallback(() => {
+      timers.current.forEach(clearTimeout);
+      timers.current = [];
+      if (ticker.current) { clearInterval(ticker.current); ticker.current = null; }
     }, []);
 
-    const log = ghost ? [...BASE_LOG, ...GHOST_LOG] : BASE_LOG;
+    const reset = useCallback(() => {
+      clearAll();
+      phaseRef.current = "idle";
+      targets.current = { rps: 4, confidence: 0, ratio: 1 };
+      sparkRef.current = [2, 3, 2, 4, 3, 5, 4];
+      setPhase("idle");
+      setLog(IDLE_LOG);
+      setMetrics(IDLE_METRICS);
+      setSpark([2, 3, 2, 4, 3, 5, 4]);
+    }, [clearAll]);
 
-    return (
-      <div style={{ display: "grid", gridTemplateRows: "56px 1fr 28px", height: "100vh" }}>
-        <ConsoleNav activeTab={tab} onTab={setTab} clock={clock} systemHealthy/>
-        <main style={{ display: "grid", gridTemplateColumns: "220px 1fr 340px", minHeight: 0 }}>
-          <AgentRail agents={AGENTS} selectedId={agent} onSelect={setAgent}/>
-          <div style={{ display: "grid", gridTemplateRows: "1fr 280px", minHeight: 0 }}>
-            <TopologyMap ghostNetActive={ghost}/>
+    const launch = useCallback(() => {
+      clearAll();
+      phaseRef.current = "recon";
+      targets.current = { rps: 12, confidence: 0, ratio: 1 };
+      sparkRef.current = [2, 3, 2, 4, 3, 5, 4];
+      tickN.current = 0;
+      setPhase("recon");
+      setLog([]);
+      setMetrics(IDLE_METRICS);
+
+      SCENARIO.forEach((ev) => {
+        const id = setTimeout(() => {
+          phaseRef.current = ev.phase;
+          setPhase(ev.phase);
+          setLog((L) => [...L, { ts: tsFrom(ev.t), level: ev.level, body: ev.body, highlight: ev.highlight }]);
+          if (ev.set) {
+            if (ev.set.rps !== undefined) targets.current.rps = ev.set.rps;
+            if (ev.set.confidence !== undefined) targets.current.confidence = ev.set.confidence;
+            const direct = {};
+            if (ev.set.latency !== undefined) direct.latency = ev.set.latency;
+            if (ev.set.session !== undefined) direct.session = ev.set.session;
+            if (Object.keys(direct).length) setMetrics((M) => ({ ...M, ...direct }));
+          }
+          if (ev.phase === "engaged") targets.current.ratio = 23;
+        }, ev.t);
+        timers.current.push(id);
+      });
+
+      // Easing + token-burn ticker.
+      ticker.current = setInterval(() => {
+        tickN.current += 1;
+        setMetrics((M) => {
+          const ease = (cur, tgt) => cur + (tgt - cur) * 0.16;
+          const rps = ease(M.rps, targets.current.rps);
+          const confidence = ease(M.confidence, targets.current.confidence);
+          const ratio = ease(M.ratio, targets.current.ratio);
+          let tokens = M.tokens;
+          const p = phaseRef.current;
+          if (p === "engaged") tokens += 240 + Math.random() * 320;
+          else if (p === "detect" || p === "decide" || p === "reroute") tokens += 28 + Math.random() * 46;
+          return { ...M, rps, confidence, ratio, tokens };
+        });
+        if (tickN.current % 3 === 0) {
+          setMetrics((M) => {
+            const arr = [...sparkRef.current, Math.max(1, M.tokens || M.rps)].slice(-22);
+            sparkRef.current = arr;
+            setSpark(arr);
+            return M;
+          });
+        }
+      }, 120);
+    }, [clearAll]);
+
+    // Autoplay when reached via /demo (?autoplay=1) — and clean up on unmount.
+    useEffect(() => {
+      const auto = new URLSearchParams(window.location.search).get("autoplay");
+      let id;
+      if (auto === "1" || auto === "true") id = setTimeout(launch, 700);
+      return () => { if (id) clearTimeout(id); clearAll(); };
+    }, [launch, clearAll]);
+
+    const running = phase !== "idle" && phase !== "engaged";
+    const detail = (
+      <IncidentDetail
+        incident={{ id: "inc-0094" }}
+        phase={phase}
+        phaseOrder={PHASE_ORDER}
+        phaseLabel={PHASE_LABEL}
+        metrics={metrics}
+        spark={spark}
+        running={running}
+        onLaunch={launch}
+        onReset={reset}
+      />
+    );
+
+    const board = narrow ? (
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <TopologyFrame phase={phase}/>
+        {detail}
+        <div style={{ height: 300, display: "flex", flexDirection: "column" }}>
+          <IncidentLog entries={log}/>
+        </div>
+      </div>
+    ) : (
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 360px", height: "100vh" }}>
+        <section style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <TopologyFrame phase={phase}/>
+          <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
             <IncidentLog entries={log}/>
           </div>
-          <IncidentDetail
-            incident={{ id: "inc-0094" }}
-            ghostNetActive={ghost}
-            onEngageGhost={() => setGhost(true)}
-            onClose={() => setGhost(false)}
-          />
-        </main>
-        <StatusBar/>
+        </section>
+        {detail}
       </div>
+    );
+
+    return (
+      <>
+        {board}
+        {/* Always-on reminder that this console is a simulation. */}
+        <div style={{
+          position: "fixed", left: 12, bottom: 12, zIndex: 200,
+          display: "flex", alignItems: "center", gap: 8,
+          padding: "5px 11px", borderRadius: 999,
+          background: "rgba(15,11,5,0.82)", border: "1px solid var(--signal-watch)",
+          backdropFilter: "blur(4px)",
+          fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 10,
+          letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--signal-watch)",
+        }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--signal-watch)",
+                         animation: "mc-blip 1.8s var(--ease-shim) infinite" }}/>
+          Démo · simulation
+        </div>
+      </>
     );
   }
 

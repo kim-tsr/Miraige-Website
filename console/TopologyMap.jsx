@@ -81,10 +81,15 @@ const TopoNode = ({ x, y, kind, label, sub, color, glow, onClick }) => (
   </div>
 );
 
-const Edge = ({ from, to, color = "var(--sand-400)", dashed, animated }) => {
+// An edge is a rotated 0-height div (the line = its top border). `packets`
+// renders small dots that travel along it (left 0 → 100% inside the rotated
+// container = from → to). Pass color="transparent" to show packets without a
+// second visible line over an existing one.
+const Edge = ({ from, to, color = "var(--sand-400)", dashed, animated, packets = 0, packetColor, speed = 2.4 }) => {
   const dx = to.x - from.x, dy = to.y - from.y;
   const len = Math.hypot(dx, dy);
   const ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const pc = packetColor || color;
   return (
     <div
       style={{
@@ -95,28 +100,54 @@ const Edge = ({ from, to, color = "var(--sand-400)", dashed, animated }) => {
         opacity: animated ? undefined : 0.9,
         animation: animated ? "mc-edge-pulse 1.8s var(--ease-shim) infinite" : "none",
       }}
-    />
+    >
+      {Array.from({ length: packets }).map((_, i) => (
+        <span
+          key={i}
+          style={{
+            position: "absolute", top: -3, marginLeft: -3,
+            width: 6, height: 6, borderRadius: "50%",
+            background: pc, boxShadow: `0 0 7px ${pc}`,
+            animation: `mc-packet ${speed}s linear infinite`,
+            animationDelay: `${((i * speed) / packets).toFixed(2)}s`,
+          }}
+        />
+      ))}
+    </div>
   );
 };
 
-const TopologyMap = ({ ghostNetActive }) => {
+const TopologyMap = ({ phase = "idle" }) => {
+  const attackActive = phase !== "idle";
+  const detecting = phase === "detect" || phase === "decide";
+  const diverted = phase === "reroute" || phase === "engaged";
+  const ghostLive = phase === "engaged";
+
   // Static-ish coordinates inside an absolutely-positioned canvas.
   // Keeping all positions here so the layout is data-driven.
   const N = {
     client:     { x: 80,  y: 140, kind: "host",         label: "client",          sub: "203.0.113.41", color: "var(--sand-100)" },
-    attacker:   { x: 80,  y: 320, kind: "host",         label: "attaquant",       sub: "198.51.100.7", color: "var(--signal-alert)" },
-    vrack:      { x: 320, y: 230, kind: "vrack",        label: "vrack-3201",      sub: "vlan 4087",     color: "var(--sand-100)" },
+    attacker:   { x: 80,  y: 320, kind: "host",         label: "attaquant",       sub: "198.51.100.7", color: attackActive ? "var(--signal-alert)" : "var(--sand-400)" },
+    vrack:      { x: 320, y: 230, kind: "vrack",        label: "octavia-lb-001",  sub: diverted ? "L7 → Ghost Net" : "load balancer · vrack 3201", color: diverted ? "var(--signal-ghost)" : "var(--sand-100)" },
     orch:       { x: 540, y: 230, kind: "orchestrator", label: "orchestrator-1",  sub: "A2A · live",    color: "var(--mirage-300)" },
     obs1:       { x: 540, y: 80,  kind: "observer",     label: "observer-1",      sub: "edge mirror",   color: "var(--sand-100)" },
-    obs3:       { x: 720, y: 80,  kind: "observer",     label: "observer-3",      sub: "score 0.94",    color: "var(--signal-watch)" },
-    prod:       { x: 780, y: 230, kind: "vrack",        label: "vrack-3210",      sub: "10.42.7.0/24 · prod", color: "var(--sand-100)" },
-    ghost:      { x: 780, y: 400, kind: "ghost",        label: "gn-0094",         sub: "Ghost Net · live",     color: "var(--signal-ghost)" },
+    obs3:       { x: 720, y: 80,  kind: "observer",     label: "observer-3",      sub: detecting || diverted ? "score 0.93" : "idle", color: detecting || diverted ? "var(--signal-watch)" : "var(--sand-400)" },
+    prod:       { x: 780, y: 230, kind: "vrack",        label: "vrack-3210",      sub: diverted ? "10.42.7.0/24 · intacte" : "10.42.7.0/24 · prod", color: diverted ? "var(--signal-ok)" : "var(--sand-100)" },
+    ghost:      { x: 780, y: 400, kind: "ghost",        label: "gn-0094",         sub: ghostLive ? "Ghost Net · live" : "Ghost Net · armé", color: "var(--signal-ghost)" },
   };
+
+  const statePill = !attackActive
+    ? <StatusPill kind="mirage" pulse>A2A · 9 agents</StatusPill>
+    : ghostLive
+      ? <StatusPill kind="ghost" pulse>Trafic dérouté → Ghost Net</StatusPill>
+      : diverted
+        ? <StatusPill kind="ghost" pulse>L7 PATCH en cours…</StatusPill>
+        : <StatusPill kind="alert" pulse>Attaque · {phase === "recon" ? "recon" : "détection"}</StatusPill>;
 
   return (
     <div
       style={{
-        position: "relative", flex: 1, minHeight: 0,
+        position: "relative", width: "100%", height: "100%",
         background: "var(--bg-deep-panel)",
         backgroundImage:
           "linear-gradient(var(--line-on-deep-1) 1px, transparent 1px), " +
@@ -128,35 +159,45 @@ const TopologyMap = ({ ghostNetActive }) => {
     >
       {/* eyebrow */}
       <div style={{ position: "absolute", left: 20, top: 16, zIndex: 4 }}>
-        <Eyebrow color="var(--sand-400)">Topology · live · vrack 3201-3210</Eyebrow>
+        <Eyebrow color="var(--sand-400)">Topology · live · octavia LB → vrack 3210</Eyebrow>
       </div>
       <div style={{ position: "absolute", right: 20, top: 16, zIndex: 4 }}>
-        <StatusPill kind="mirage" pulse>A2A · 7 agents</StatusPill>
+        {statePill}
       </div>
 
-      {/* edges - legitimate flow */}
-      <Edge from={N.client}   to={N.vrack} color="var(--signal-ok)"/>
-      <Edge from={N.vrack}    to={N.prod}  color="var(--signal-ok)"/>
+      {/* ── legitimate user: client → load balancer → real site (always) ── */}
+      <Edge from={N.client} to={N.vrack} color="var(--signal-ok)" packets={2} speed={2.8}/>
+      <Edge from={N.vrack}  to={N.prod}  color="var(--signal-ok)" packets={2} speed={2.8}/>
+
       {/* observer hookups */}
-      <Edge from={N.obs1}     to={N.orch}  color="var(--sand-500)" dashed/>
-      <Edge from={N.obs3}     to={N.orch}  color="var(--signal-watch)" animated/>
-      {/* orchestrator -> infra control */}
-      <Edge from={N.orch}     to={N.vrack} color="var(--mirage-500)"/>
-      <Edge from={N.orch}     to={N.prod}  color="var(--mirage-500)"/>
-      {/* hostile traffic (red) currently diverted -> ghost */}
-      {ghostNetActive && (
-        <>
-          <Edge from={N.attacker} to={N.ghost} color="var(--signal-alert)"/>
-          <Edge from={N.orch}     to={N.ghost} color="var(--mirage-500)" dashed animated/>
-        </>
+      <Edge from={N.obs1} to={N.orch} color="var(--sand-500)" dashed/>
+      <Edge from={N.obs3} to={N.orch} color={detecting || diverted ? "var(--signal-watch)" : "var(--sand-500)"} dashed={!(detecting || diverted)} animated={detecting || diverted}/>
+
+      {/* orchestrator → infra control plane */}
+      <Edge from={N.orch} to={N.vrack} color="var(--mirage-500)"/>
+      <Edge from={N.orch} to={N.prod}  color="var(--mirage-500)"/>
+      {diverted && <Edge from={N.orch} to={N.ghost} color="var(--mirage-500)" dashed animated/>}
+
+      {/* ── attacker ALWAYS enters through the load balancer ── */}
+      {attackActive
+        ? <Edge from={N.attacker} to={N.vrack} color="var(--signal-alert)" packets={3} speed={1.6}/>
+        : <Edge from={N.attacker} to={N.vrack} color="var(--sand-500)" dashed/>}
+
+      {/* ── the LB's routing decision ──
+           before reroute: LB forwards the attacker to the REAL site (red dots
+           over the green link). after reroute: same LB now forwards to the
+           Ghost Net instead — no new attacker→ghost line, the path stays
+           attacker → LB → destination. */}
+      {attackActive && !diverted && (
+        <Edge from={N.vrack} to={N.prod} color="transparent" packets={3} packetColor="var(--signal-alert)" speed={1.6}/>
       )}
-      {!ghostNetActive && (
-        <Edge from={N.attacker} to={N.vrack} color="var(--signal-alert)"/>
+      {diverted && (
+        <Edge from={N.vrack} to={N.ghost} color="var(--signal-alert)" packets={3} speed={1.6}/>
       )}
 
       {/* nodes */}
       {Object.entries(N).map(([k, v]) => (
-        <TopoNode key={k} {...v} glow={k === "orch"}/>
+        <TopoNode key={k} {...v} glow={k === "orch" || (k === "ghost" && ghostLive)}/>
       ))}
     </div>
   );
