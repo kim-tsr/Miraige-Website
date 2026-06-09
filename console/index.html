@@ -31,7 +31,7 @@
   const { useState, useEffect } = React;
 
   const AGENTS = [
-    { id: "o1",  kind: "orchestrator", name: "orchestrator-1", meta: "GRA11 · A2A HMAC coordinator", status: "busy" },
+    { id: "o1",  kind: "orchestrator", name: "orchestrator-1", meta: "A2A HMAC coordinator", status: "busy" },
     { id: "s1",  kind: "observer",     name: "sentinel-1",     meta: "edge · Tier 0 Suricata",       status: "healthy" },
     { id: "s2",  kind: "observer",     name: "sentinel-2",     meta: "Tier 1 · XGBoost CIC-IDS",     status: "healthy" },
     { id: "s3",  kind: "observer",     name: "sentinel-3",     meta: "Tier 2 · Llama-3.1-8B · 0.93", status: "watch" },
@@ -53,7 +53,7 @@
     { ts: "19:42:10.500", level: "GHOST", body: <>A2A signed → orchestrator-1 · session <span style={{color:"var(--mirage-300)"}}>s_x9k2</span></>, highlight: true },
     { ts: "19:42:10.850", level: "GHOST", body: <>MCP route_to_ghost_shell · persona=<span style={{color:"var(--mirage-300)"}}>portal_ovh</span> · netns/TLS/DNS isolés</>, highlight: true },
     { ts: "19:42:11.050", level: "OK",    body: <>L7 PATCH Octavia · XFF STARTS_WITH <span style={{color:"var(--mirage-300)"}}>198.51.100.</span> → <span style={{color:"var(--mirage-300)"}}>ghost_shell</span></> },
-    { ts: "19:42:11.100", level: "OK",    body: <>engagement <span style={{color:"var(--mirage-300)"}}>inc-0094</span> active · TTL 30 min · ratio <span style={{color:"var(--mirage-300)"}}>23×</span></> },
+    { ts: "19:42:11.100", level: "OK",    body: <>engagement <span style={{color:"var(--mirage-300)"}}>inc-0094</span> active · TTL 30 min · ratio <span style={{color:"var(--mirage-300)"}}>×19,2</span></> },
   ];
 
   function App() {

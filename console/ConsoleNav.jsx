@@ -56,7 +56,7 @@ const ConsoleNav = ({ activeTab, onTab, clock, systemHealthy = true }) => {
           color: "var(--sand-300)", letterSpacing: "0.02em",
         }}
       >
-        {clock} UTC · OVH-GRA
+        {clock} UTC
       </span>
 
       <StatusPill kind={systemHealthy ? "ok" : "alert"} pulse>

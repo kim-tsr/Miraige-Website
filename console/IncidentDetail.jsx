@@ -79,9 +79,9 @@ const IncidentDetail = ({ incident, ghostNetActive, onEngageGhost, onClose }) =>
       <KeyVal k="confidence" v="0.93 (Llama-3.1-8B)"/>
       <KeyVal k="cible"     v="portal.mirage.cloud"/>
       <KeyVal k="détecté"   v="19:42:08 UTC"/>
-      <KeyVal k="latence"   v={ghostNetActive ? "2.94 s" : "— en cours"}/>
-      <KeyVal k="session"   v={ghostNetActive ? "s_x9k2 · portal_ovh" : "—"}/>
-      <KeyVal k="ratio"     v={ghostNetActive ? "23× (honnête 5-50×)" : "—"}/>
+      <KeyVal k="latence"   v={ghostNetActive ? "≈ 3 s" : "en cours"}/>
+      <KeyVal k="session"   v={ghostNetActive ? "s_x9k2 · portal_ovh" : "·"}/>
+      <KeyVal k="ratio"     v={ghostNetActive ? "×19,2 (campagne)" : "·"}/>
     </div>
 
     <div

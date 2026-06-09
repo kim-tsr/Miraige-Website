@@ -15,17 +15,15 @@ const StatusBar = () => (
     <span style={{ display: "flex", gap: 22 }}>
       <span>
         <span style={{ color: "var(--mirage-300)" }}>orchestrator-1</span>{" "}
-        healthy · 9 agents
+        healthy · 7 agents
       </span>
-      <span>vRack <span style={{ color: "var(--sand-100)" }}>3201</span>,{" "}
-        <span style={{ color: "var(--sand-100)" }}>3204</span>,{" "}
-        <span style={{ color: "var(--sand-100)" }}>3210</span></span>
-      <span>Ghost Net pool · <span style={{ color: "var(--signal-ghost)" }}>2 / 32</span></span>
+      <span>Ghost Shell · <span style={{ color: "var(--signal-ghost)" }}>1 container</span></span>
+      <span>sessions actives · <span style={{ color: "var(--signal-ghost)" }}>2</span></span>
     </span>
     <span style={{ display: "flex", gap: 22 }}>
       <span>uptime 14d 02:11</span>
       <span>build 7.2.0</span>
-      <span>OVH-GRA · region eu-west-paris</span>
+      <span>region eu-west-paris</span>
     </span>
   </footer>
 );

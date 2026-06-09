@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 const Diagram = () => (
-  <section style={{
+  <section className="mg-pad" style={{
     padding: "0 48px 120px", maxWidth: 1280, margin: "0 auto",
   }}>
     <figure
@@ -22,7 +22,7 @@ const Diagram = () => (
         <b style={{
           fontFamily: "var(--font-code)", color: "var(--fg-2)",
           fontWeight: 500, letterSpacing: "0.04em",
-        }}>Fig. 02</b> · diversion Ghost Net · le flux légitime est routé vers le vRack rotated · le flux hostile est redirigé vers le clone · clonage MCP exécuté en arrière-plan
+        }}>Fig. 02</b> · diversion Ghost Net · le flux hostile est redirigé vers le Ghost Shell par un PATCH L7 sur Octavia · le flux légitime n'est jamais touché · aucun clone, le SI leurre est généré à la volée
       </figcaption>
     </figure>
   </section>

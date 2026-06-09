@@ -128,10 +128,10 @@ const TopologyMap = ({ ghostNetActive }) => {
     >
       {/* eyebrow */}
       <div style={{ position: "absolute", left: 20, top: 16, zIndex: 4 }}>
-        <Eyebrow color="var(--sand-400)">Topology · live · vrack 3201–3210</Eyebrow>
+        <Eyebrow color="var(--sand-400)">Topology · live · vrack 3201-3210</Eyebrow>
       </div>
       <div style={{ position: "absolute", right: 20, top: 16, zIndex: 4 }}>
-        <StatusPill kind="mirage" pulse>A2A · 9 agents</StatusPill>
+        <StatusPill kind="mirage" pulse>A2A · 7 agents</StatusPill>
       </div>
 
       {/* edges - legitimate flow */}

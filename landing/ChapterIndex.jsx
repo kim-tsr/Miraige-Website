@@ -13,7 +13,7 @@ const CHAPTERS = [
   { id: "console",     n: "06", label: "console"   },
   { id: "doctrine",    n: "07", label: "doctrine"  },
   { id: "readings",    n: "08", label: "readings"  },
-  { id: "invitation",  n: "09", label: "invitation"},
+  { id: "invitation",  n: "09", label: "contact"   },
 ];
 
 const ChapterIndex = () => {
@@ -41,7 +41,7 @@ const ChapterIndex = () => {
   }, []);
 
   return (
-    <nav style={{
+    <nav className="mg-chapter-rail" style={{
       position: "fixed", top: "50%", right: 32,
       transform: "translateY(-50%)", zIndex: 60,
       display: "flex", flexDirection: "column", gap: 14,

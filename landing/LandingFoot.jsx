@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 const LandingFoot = () => (
   <footer
+    className="mg-pad"
     style={{
       background: "var(--sand-900)",
       borderTop: "1px solid var(--line-on-deep-2)",
@@ -26,7 +27,7 @@ const LandingFoot = () => (
         AI
         <span style={{ color: "var(--mirage-500)" }}>]</span>GE
       </span>
-      <span>hackathon@miraige.dev · OVHcloud · GRA region · v 0.1</span>
+      <span>Hackathon cyber OVHcloud · 2026</span>
     </div>
   </footer>
 );
