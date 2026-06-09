@@ -7,13 +7,13 @@ and React loaded from a CDN with Babel transpiling the `.jsx` files in the brows
 ```
 .
 ├── index.html            # the landing page          →  /
-├── *.jsx                 # landing components (Hero, SpecSheet, …)
-├── colors_and_type.css   # design tokens + @font-face
-├── fonts/                # self-hosted woff2 (Rajdhani, Syncopate, …)
-├── assets/               # logo, topology, architecture diagrams, imagery
+├── landing/              # landing components (Hero, SpecSheet, …) loaded by index.html
 ├── console/              # operator console mockup     →  /console
 │   ├── index.html
 │   └── *.jsx
+├── colors_and_type.css   # design tokens + @font-face
+├── fonts/                # self-hosted woff2 (Rajdhani, Syncopate, …)
+├── assets/               # logo, topology, architecture diagrams, imagery
 └── vercel.json
 ```
 
