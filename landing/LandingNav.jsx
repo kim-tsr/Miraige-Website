@@ -33,10 +33,10 @@ const LandingNav = () => (
       fontSize: 11.5, letterSpacing: "0.22em", textTransform: "uppercase",
     }}>
       <a href="#whitepaper" style={{ color: "var(--fg-2)", textDecoration: "none" }}>Whitepaper</a>
-      <a href="#invitation" style={{
+      <a href="/demo/" style={{
         color: "var(--sand-50)", background: "var(--sand-900)",
         padding: "8px 14px", borderRadius: 4, textDecoration: "none",
-      }}>Démo —&gt;</a>
+      }}>Démo live —&gt;</a>
     </div>
   </nav>
 );

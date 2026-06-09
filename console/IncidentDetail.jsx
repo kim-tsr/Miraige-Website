@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* IncidentDetail — right rail inspector. */
+/* IncidentDetail — right rail inspector + demo driver (launch → reroute). */
 
 const KeyVal = ({ k, v, mono = true }) => (
   <div
@@ -29,106 +29,147 @@ const KeyVal = ({ k, v, mono = true }) => (
   </div>
 );
 
-const IncidentDetail = ({ incident, ghostNetActive, onEngageGhost, onClose }) => (
-  <aside
-    style={{
-      width: 340,
-      background: "var(--bg-deep-sunk)",
-      borderLeft: "1px solid var(--line-on-deep-2)",
-      display: "flex", flexDirection: "column",
-      overflowY: "auto",
-    }}
-  >
-    <header
+/* Compact 5-step progress: recon → detect → decide → reroute → engaged */
+const PhaseStepper = ({ order, current }) => {
+  const idx = order.indexOf(current);
+  return (
+    <div style={{ display: "flex", gap: 5, marginTop: 12 }}>
+      {order.map((p, i) => {
+        const done = idx >= i && idx >= 0;
+        const active = idx === i;
+        const c = current === "engaged"
+          ? "var(--signal-ghost)"
+          : "var(--signal-watch)";
+        return (
+          <div key={p} style={{ flex: 1, height: 4, borderRadius: 2, position: "relative",
+                                 background: done ? c : "var(--line-on-deep-2)",
+                                 boxShadow: active ? `0 0 8px -1px ${c}` : "none",
+                                 transition: "background 200ms" }}/>
+        );
+      })}
+    </div>
+  );
+};
+
+const fmtInt = (n) => Math.round(n).toLocaleString("fr-FR").replace(/ /g, " ");
+
+const IncidentDetail = ({ incident, phase, phaseOrder, phaseLabel, metrics, spark, running, onLaunch, onReset }) => {
+  const idle = phase === "idle";
+  const engaged = phase === "engaged";
+  const confidence = metrics.confidence > 0 ? metrics.confidence.toFixed(2) : "—";
+  const headline = idle
+    ? "Aucun incident. Lancez la démo pour simuler une attaque agentique en temps réel."
+    : engaged
+      ? "Trafic attaquant rerouté vers Ghost Shell s_x9k2. Production intacte, compute brûlé."
+      : phase === "reroute"
+        ? "Reroutage L7 Octavia en cours · bascule du flux hostile vers le leurre."
+        : "Cascade T0 → T1 → T2 en cours · scoring et canari PI.";
+
+  return (
+    <aside
       style={{
-        padding: "16px 18px",
-        borderBottom: "1px solid var(--line-on-deep-2)",
-        background: "var(--bg-deep-panel)",
+        width: "100%",
+        background: "var(--bg-deep-sunk)",
+        borderLeft: "1px solid var(--line-on-deep-2)",
+        display: "flex", flexDirection: "column",
+        overflowY: "auto",
       }}
     >
-      <Eyebrow color="var(--sand-400)">Incident en cours</Eyebrow>
-      <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginTop: 8 }}>
-        <span
+      <header
+        style={{
+          padding: "16px 18px",
+          borderBottom: "1px solid var(--line-on-deep-2)",
+          background: "var(--bg-deep-panel)",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <span style={{ fontFamily: '"Syncopate", sans-serif', fontWeight: 700, fontSize: 13,
+                         letterSpacing: "0.16em", color: "var(--sand-100)" }}>
+            MIR<span style={{ color: "var(--mirage-500)" }}>[</span>AI<span style={{ color: "var(--mirage-500)" }}>]</span>GE
+          </span>
+          <Eyebrow color="var(--sand-500)">Mission Control</Eyebrow>
+        </div>
+        <Eyebrow color="var(--sand-400)">{idle ? "Aucun incident" : "Incident en cours"}</Eyebrow>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginTop: 8 }}>
+          <span
+            style={{
+              fontFamily: '"Rajdhani", sans-serif', fontWeight: 600,
+              fontSize: 26, color: "var(--sand-100)", letterSpacing: "0.02em",
+            }}
+          >
+            {idle ? "—" : incident.id}
+          </span>
+          <StatusPill kind={engaged ? "ghost" : idle ? "mirage" : "alert"} pulse={!idle && !engaged}>
+            {idle ? "En veille" : engaged ? "Contenu" : phaseLabel[phase]}
+          </StatusPill>
+        </div>
+        <div
           style={{
-            fontFamily: '"Rajdhani", sans-serif', fontWeight: 600,
-            fontSize: 26, color: "var(--sand-100)", letterSpacing: "0.02em",
+            marginTop: 8, fontFamily: "var(--font-ui)", fontSize: 12.5,
+            color: "var(--sand-300)", lineHeight: 1.45,
           }}
         >
-          {incident.id}
-        </span>
-        <StatusPill kind={ghostNetActive ? "ghost" : "alert"} pulse={!ghostNetActive}>
-          {ghostNetActive ? "Contenu" : "Confirmé"}
-        </StatusPill>
+          {headline}
+        </div>
+        {!idle && <PhaseStepper order={phaseOrder} current={phase}/>}
+      </header>
+
+      <div style={{ padding: "12px 18px" }}>
+        <KeyVal k="vector"     v={idle ? "—" : "ai-recon"}/>
+        <KeyVal k="source"     v="198.51.100.7"/>
+        <KeyVal k="req / 10s"  v={<span style={{ color: metrics.rps > 20 ? "var(--signal-watch)" : "var(--sand-100)" }}>{fmtInt(metrics.rps)}</span>}/>
+        <KeyVal k="confidence" v={<span style={{ color: metrics.confidence >= 0.9 ? "var(--signal-alert)" : "var(--sand-100)" }}>{confidence}{confidence !== "—" ? " · Llama-3.1-8B" : ""}</span>}/>
+        <KeyVal k="latence"    v={metrics.latency}/>
+        <KeyVal k="session"    v={metrics.session}/>
+        <KeyVal k="ratio"      v={engaged
+          ? <span style={{ color: "var(--signal-ghost)" }}>{metrics.ratio.toFixed(1)}× <span style={{ color: "var(--sand-400)" }}>(honnête 5–50×)</span></span>
+          : "—"}/>
       </div>
+
+      <div
+        style={{ padding: "12px 18px 16px",
+                 borderTop: "1px solid var(--line-on-deep-1)" }}
+      >
+        <Eyebrow color="var(--sand-400)">
+          <div style={{ marginBottom: 10 }}>Tokens attaquant brûlés (cumul)</div>
+        </Eyebrow>
+        <div
+          style={{
+            fontFamily: '"Titillium Web", sans-serif', fontWeight: 600,
+            fontSize: 28, color: metrics.tokens > 0 ? "var(--mirage-300)" : "var(--sand-400)",
+            fontFeatureSettings: '"tnum" 1',
+          }}
+        >
+          {fmtInt(metrics.tokens)} <span style={{ fontSize: 12, color: "var(--sand-400)" }}>tokens</span>
+        </div>
+        <Sparkline
+          values={spark && spark.length > 1 ? spark : [1, 1]}
+          color="var(--mirage-300)"
+          height={32}
+        />
+        <div style={{
+          marginTop: 8, fontFamily: "var(--font-code)", fontSize: 10.5,
+          color: "var(--sand-400)", letterSpacing: "0.04em",
+        }}>
+          notre coût ≈ {(0.002 + (metrics.tokens / 1e6) * 5).toFixed(3)} € · tiktoken o200k_base
+        </div>
+      </div>
+
       <div
         style={{
-          marginTop: 8, fontFamily: "var(--font-ui)", fontSize: 12.5,
-          color: "var(--sand-300)", lineHeight: 1.45,
+          marginTop: "auto", padding: 18,
+          borderTop: "1px solid var(--line-on-deep-2)",
+          background: "var(--bg-deep-panel)",
+          display: "flex", flexDirection: "column", gap: 10,
         }}
       >
-        {ghostNetActive
-          ? "Trafic attaquant rerouté vers Ghost Shell session s_x9k2. Production intacte."
-          : "Cascade T0+T1+T2 confirmée · canari PI hit. En attente engagement."}
+        {idle && <Btn kind="mirage" onClick={onLaunch}>▶ Lancer l'attaque (démo)</Btn>}
+        {running && <Btn kind="ghost" disabled>● {phaseLabel[phase]}…</Btn>}
+        {engaged && <Btn kind="mirage" onClick={onLaunch}>↻ Rejouer la démo</Btn>}
+        {!idle && <Btn kind="ghost" onClick={onReset}>Réinitialiser</Btn>}
       </div>
-    </header>
-
-    <div style={{ padding: "12px 18px" }}>
-      <KeyVal k="vector"    v="ai-recon"/>
-      <KeyVal k="source"    v="198.51.100.7"/>
-      <KeyVal k="agent"     v="LangChain ReAct"/>
-      <KeyVal k="confidence" v="0.93 (Llama-3.1-8B)"/>
-      <KeyVal k="cible"     v="portal.mirage.cloud"/>
-      <KeyVal k="détecté"   v="19:42:08 UTC"/>
-      <KeyVal k="latence"   v={ghostNetActive ? "2.94 s" : "— en cours"}/>
-      <KeyVal k="session"   v={ghostNetActive ? "s_x9k2 · portal_ovh" : "—"}/>
-      <KeyVal k="ratio"     v={ghostNetActive ? "23× (honnête 5-50×)" : "—"}/>
-    </div>
-
-    <div
-      style={{ padding: "12px 18px 16px",
-               borderTop: "1px solid var(--line-on-deep-1)" }}
-    >
-      <Eyebrow color="var(--sand-400)">
-        <div style={{ marginBottom: 10 }}>Tokens attaquant burned (cumul)</div>
-      </Eyebrow>
-      <div
-        style={{
-          fontFamily: '"Titillium Web", sans-serif', fontWeight: 600,
-          fontSize: 28, color: "var(--sand-100)",
-          fontFeatureSettings: '"tnum" 1',
-        }}
-      >
-        28&nbsp;400 <span style={{ fontSize: 12, color: "var(--sand-400)" }}>tokens</span>
-      </div>
-      <Sparkline
-        values={[10, 18, 24, 35, 48, 62, 78, 95, 118, 142, 168, 195]}
-        color="var(--mirage-300)"
-        height={32}
-      />
-      <div style={{
-        marginTop: 8, fontFamily: "var(--font-code)", fontSize: 10.5,
-        color: "var(--sand-400)", letterSpacing: "0.04em",
-      }}>
-        notre coût · 0,002 € · tiktoken o200k_base · GPT-4o pricing
-      </div>
-    </div>
-
-    <div
-      style={{
-        marginTop: "auto", padding: 18,
-        borderTop: "1px solid var(--line-on-deep-2)",
-        background: "var(--bg-deep-panel)",
-        display: "flex", flexDirection: "column", gap: 10,
-      }}
-    >
-      {!ghostNetActive ? (
-        <Btn kind="mirage" onClick={onEngageGhost}>Engager Ghost Shell</Btn>
-      ) : (
-        <Btn kind="ghost" onClick={onClose}>Clôturer l'incident</Btn>
-      )}
-      <Btn kind="ghost" onClick={() => {}}>Voir le rapport complet</Btn>
-    </div>
-  </aside>
-);
+    </aside>
+  );
+};
 
 Object.assign(window, { IncidentDetail });

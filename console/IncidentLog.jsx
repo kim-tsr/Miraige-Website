@@ -28,9 +28,8 @@ const IncidentLog = ({ entries }) => (
   <section
     style={{
       background: "var(--bg-deep-panel)",
-      border: "1px solid var(--line-on-deep-2)",
-      borderTop: 0,
-      display: "flex", flexDirection: "column", minHeight: 0,
+      borderTop: "1px solid var(--line-on-deep-2)",
+      flex: 1, display: "flex", flexDirection: "column", minHeight: 0,
     }}
   >
     <header
