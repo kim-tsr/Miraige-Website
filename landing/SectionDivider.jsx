@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-/* SectionDivider — full-bleed heat-haze divider between major sections.
+/* SectionDivider - full-bleed heat-haze divider between major sections.
    Stripe-/Anthropic-style decorative band. */
 
 const SectionDivider = ({ light = true }) => (
   <div style={{
-    position: "relative", height: 120,
+    position: "relative", height: 72,
     background: light ? "var(--bg)" : "var(--sand-900)",
     overflow: "hidden",
     pointerEvents: "none",

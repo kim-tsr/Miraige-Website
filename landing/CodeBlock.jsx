@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* CodeBlock — actual MCP tool call signature with Fira Code ligatures. */
+/* CodeBlock - actual MCP tool call signature with Fira Code ligatures. */
 
 const T = ({ c, children }) => <span style={{ color: c }}>{children}</span>;
 
@@ -8,7 +8,7 @@ const CodeBlock = () => (
     id="code"
     className="mg-pad"
     style={{
-      padding: "120px 48px",
+      padding: "96px 48px",
       background: "var(--sand-50)",
       borderTop: "1px solid var(--line-2)",
     }}
@@ -55,7 +55,7 @@ const CodeBlock = () => (
           overflowX: "auto", whiteSpace: "pre",
         }}
       >
-        <T c="var(--sand-500)">{`// orchestrator-1 → ovh-mcp · A2A signé HMAC\n`}</T>
+        <T c="var(--sand-500)">{`// orchestrator → ovh-mcp · A2A signé HMAC\n`}</T>
         <T c="var(--signal-watch)">tool</T>: <T c="var(--mirage-300)">"reroute_lb_to_honeypot"</T>{`\n`}
         <T c="var(--signal-watch)">input</T>: {`{\n`}
         {`  `}<T c="var(--sand-100)">session</T>: <T c="var(--mirage-300)">"s_x9k2"</T>,{`\n`}
@@ -63,7 +63,7 @@ const CodeBlock = () => (
         {`  `}<T c="var(--sand-100)">pool</T>:    <T c="var(--mirage-300)">"ghost_shell"</T>,{`\n`}
         {`  `}<T c="var(--sand-100)">ttl</T>:     <T c="var(--mirage-300)">1800</T>{`\n`}
         {`}\n\n`}
-        <T c="var(--sand-500)">{`// ovh-mcp → orchestrator-1 · 1 PATCH L7 Octavia\n`}</T>
+        <T c="var(--sand-500)">{`// ovh-mcp → orchestrator · 1 PATCH L7 Octavia\n`}</T>
         <T c="var(--signal-watch)">result</T>: {`{ `}
         <T c="var(--sand-100)">ok</T>: <T c="var(--signal-ok)">true</T>,
         {` `}<T c="var(--sand-100)">rule_id</T>: <T c="var(--mirage-300)">"l7-4290"</T>,

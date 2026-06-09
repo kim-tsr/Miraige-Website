@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* Atoms — reusable bits shared across mission_control screens. */
+/* Atoms - reusable bits shared across mission_control screens. */
 
 const StatusPill = ({ kind = "ok", children, pulse = false }) => {
   const colors = {

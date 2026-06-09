@@ -45,7 +45,7 @@
     detect:  "Détection T0·T1·T2",
     decide:  "Décision A2A",
     reroute: "Reroutage L7",
-    engaged: "Ghost Net engagé",
+    engaged: "Ghost Shell engagé",
   };
 
   function tsFrom(ms) {
@@ -69,17 +69,17 @@
     { t: 4350, phase: "decide",  level: "OK",    body: <>MCP {m("route_to_ghost_shell")} · persona={m("portal_ovh")}</> },
     { t: 5000, phase: "reroute", level: "OK",    body: <>L7 PATCH Octavia · {m("198.51.100.")} → {m("ghost_shell")}</>, highlight: true, set: { latency: "2.94 s" } },
     { t: 5550, phase: "reroute", level: "GHOST", body: <>session {m("s_x9k2")} ouverte · production {m("intacte")}</>, set: { session: "s_x9k2" } },
-    { t: 6200, phase: "engaged", level: "GHOST", body: <>engagement {m("inc-0094")} actif · le budget compute brûle</>, highlight: true },
+    { t: 6200, phase: "engaged", level: "GHOST", body: <>engagement {m("incident")} actif · le budget compute brûle</>, highlight: true },
   ];
 
   const IDLE_LOG = [
-    { ts: "19:41:58.110", level: "OK", body: <>route {m("198.51.100.0/24")} → {m("octavia-lb-001")} · trafic légitime</> },
+    { ts: "19:41:58.110", level: "OK", body: <>route {m("198.51.100.0/24")} → {m("octavia-lb")} · trafic légitime</> },
     { ts: "19:41:59.834", level: "OK", body: <>rate={m("4 req/s")} · Tier 0 clear · système nominal</> },
   ];
 
-  const IDLE_METRICS = { rps: 4, confidence: 0, tokens: 0, ratio: 1, latency: "—", session: "—" };
+  const IDLE_METRICS = { rps: 4, confidence: 0, tokens: 0, ratio: 1, latency: "-", session: "-" };
 
-  // matchMedia hook — defensive so it also works under jsdom (returns false).
+  // matchMedia hook - defensive so it also works under jsdom (returns false).
   function useIsNarrow(bp = 860) {
     const [narrow, setNarrow] = useState(false);
     useEffect(() => {
@@ -172,7 +172,7 @@
             if (ev.set.session !== undefined) direct.session = ev.set.session;
             if (Object.keys(direct).length) setMetrics((M) => ({ ...M, ...direct }));
           }
-          if (ev.phase === "engaged") targets.current.ratio = 23;
+          if (ev.phase === "engaged") targets.current.ratio = 19;
         }, ev.t);
         timers.current.push(id);
       });
@@ -202,7 +202,7 @@
       }, 120);
     }, [clearAll]);
 
-    // Autoplay when reached via /demo (?autoplay=1) — and clean up on unmount.
+    // Autoplay when reached via /demo (?autoplay=1) - and clean up on unmount.
     useEffect(() => {
       const auto = new URLSearchParams(window.location.search).get("autoplay");
       let id;
@@ -213,7 +213,7 @@
     const running = phase !== "idle" && phase !== "engaged";
     const detail = (
       <IncidentDetail
-        incident={{ id: "inc-0094" }}
+        incident={{ id: "incident" }}
         phase={phase}
         phaseOrder={PHASE_ORDER}
         phaseLabel={PHASE_LABEL}

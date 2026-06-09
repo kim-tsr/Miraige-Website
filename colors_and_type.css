@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIR[AI]GE — colors_and_type.css
+   MIR[AI]GE - colors_and_type.css
    Sand, horizon, mirage. Telemetry over a desert at dusk.
    ========================================================================== */
 
@@ -55,10 +55,10 @@
 :root {
 
   /* ---- Color: sand foundation -----------------------------------------
-     Warm, paper-like neutrals. These read as "the desert floor" — daytime
+     Warm, paper-like neutrals. These read as "the desert floor" - daytime
      on the lightest, dusk on the deeper. Used for surfaces, cards, panels. */
 
-  --sand-50:  #F7F1E6;   /* bone — lightest paper */
+  --sand-50:  #F7F1E6;   /* bone - lightest paper */
   --sand-100: #EFE5D2;   /* parchment */
   --sand-200: #E4D4B5;   /* dune light */
   --sand-300: #D4BE92;   /* dune mid (the brand neutral) */
@@ -67,7 +67,7 @@
   --sand-600: #5E4E36;   /* sienna deep */
   --sand-700: #3A2F20;   /* coffee */
   --sand-800: #221B11;   /* dusk earth */
-  --sand-900: #0F0B05;   /* night sand — near-black */
+  --sand-900: #0F0B05;   /* night sand - near-black */
 
   /* ---- Color: mirage accent -------------------------------------------
      The single cool shimmer in the warm world. Pale, slightly green-tinted
@@ -76,15 +76,15 @@
 
   --mirage-100: #DCEFE8;   /* faint shimmer wash */
   --mirage-300: #8EC9BC;   /* mirage line */
-  --mirage-500: #4FA08F;   /* mirage core — interactive */
-  --mirage-700: #2C6E62;   /* mirage deep — pressed/visited */
+  --mirage-500: #4FA08F;   /* mirage core - interactive */
+  --mirage-700: #2C6E62;   /* mirage deep - pressed/visited */
 
   /* ---- Color: telemetry / status -------------------------------------- */
 
-  --signal-ok:    #6B8E3D;   /* operational — olive, not green */
-  --signal-watch: #C99441;   /* watch — warm amber */
-  --signal-alert: #B0432C;   /* threat — burnt sienna red */
-  --signal-ghost: #7C6FA8;   /* Ghost Net — dim violet (the decoy) */
+  --signal-ok:    #6B8E3D;   /* operational - olive, not green */
+  --signal-watch: #C99441;   /* watch - warm amber */
+  --signal-alert: #B0432C;   /* threat - burnt sienna red */
+  --signal-ghost: #7C6FA8;   /* Ghost Net - dim violet (the decoy) */
 
   /* ---- Semantic surfaces ---------------------------------------------- */
 
@@ -140,7 +140,7 @@
   --lh-body:     1.55;
   --lh-mono:     1.5;
 
-  /* The wordmark and section headers carry a strong tracking — this is
+  /* The wordmark and section headers carry a strong tracking - this is
      the "desert horizon" feel. Body and data use normal tracking. */
   --tr-wordmark: 0.32em;
   --tr-display:  0.04em;
@@ -148,7 +148,7 @@
   --tr-body:     0;
   --tr-mono:     0;
 
-  /* ---- Spacing (a 4 / 6 hybrid — survey grid) ------------------------ */
+  /* ---- Spacing (a 4 / 6 hybrid - survey grid) ------------------------ */
 
   --s-1: 4px;
   --s-2: 8px;
@@ -168,7 +168,7 @@
   --r-3:    8px;
   --r-pill: 999px;
 
-  /* ---- Elevation — extremely restrained.
+  /* ---- Elevation - extremely restrained.
          Light side: a single warm sand shadow.
          Dark side: a faint mirage glow. ------------------------------- */
 
@@ -178,7 +178,7 @@
   --elev-deep-1: 0 0 0 1px rgba(228, 212, 181, 0.06), 0 1px 0 rgba(255, 255, 255, 0.02) inset;
   --elev-deep-2: 0 8px 32px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(228,212,181,0.08);
 
-  /* Mirage glow — for the single "active agent" or "live shimmer" element */
+  /* Mirage glow - for the single "active agent" or "live shimmer" element */
   --glow-mirage: 0 0 0 1px rgba(79, 160, 143, 0.35),
                  0 0 24px -4px rgba(79, 160, 143, 0.45);
 
@@ -203,7 +203,7 @@
       rgba(247, 241, 230, 0) 100%
   );
 
-  /* Sand-paper texture overlay (CSS gradient fallback — no PNG required) */
+  /* Sand-paper texture overlay (CSS gradient fallback - no PNG required) */
   --sand-texture:
     radial-gradient(circle at 20% 30%, rgba(58, 47, 32, 0.025) 0, transparent 38%),
     radial-gradient(circle at 70% 65%, rgba(58, 47, 32, 0.02) 0, transparent 45%),
@@ -212,7 +212,7 @@
 
 
 /* ==========================================================================
-   Semantic element styles — base layer
+   Semantic element styles - base layer
    ========================================================================== */
 
 html { color: var(--fg-1); background: var(--bg); font-family: var(--font-ui); }
@@ -248,13 +248,13 @@ code, .code, kbd, samp {
 
 .code-lig { font-family: var(--font-ligature); font-variant-ligatures: contextual common-ligatures; }
 
-/* The horizon line — a 1px hairline used as a section divider */
+/* The horizon line - a 1px hairline used as a section divider */
 .horizon { height: 1px; background: linear-gradient(90deg,
    transparent 0%, var(--line-2) 8%, var(--line-2) 92%, transparent 100%); }
 
 
 /* ==========================================================================
-   Responsive — mobile-first overrides.
+   Responsive - mobile-first overrides.
    The landing components set their desktop layout via inline styles, so the
    mobile rules below carry !important to win against inline specificity.
    Layout hooks are added as classes (mg-*); display type uses clamp() inline.
@@ -263,6 +263,9 @@ code, .code, kbd, samp {
 /* Kill horizontal scroll from full-bleed parallax / negative-inset layers. */
 html, body { overflow-x: hidden; max-width: 100%; }
 img, svg { max-width: 100%; }
+
+/* Long tokens (tool names, URLs, hashes) wrap instead of overflowing. */
+h1, h2, h3, h4, p, figcaption, li { overflow-wrap: break-word; }
 
 @media (max-width: 920px) {
   /* Section gutters shrink on small screens. */
@@ -283,6 +286,9 @@ img, svg { max-width: 100%; }
   /* Field readings: 3 cols → 2 cols. */
   .mg-readings { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
 
+  /* Hero wordmark: Syncopate is ultra-wide, the desktop 11vw overflows phones. */
+  .mg-hero-mark { font-size: clamp(28px, 8.6vw, 76px) !important; letter-spacing: 0.12em !important; }
+
   /* Corner marginalia (§ labels, build stamps, scroll cue) just clutter phones. */
   .mg-marginalia { display: none !important; }
 
@@ -291,6 +297,10 @@ img, svg { max-width: 100%; }
 
   /* Field-readings footer meta wraps instead of overflowing. */
   .mg-wrap { flex-wrap: wrap !important; gap: 12px 28px !important; }
+
+  /* Architecture figure: keep the SVG text legible, scroll sideways instead. */
+  .mg-diagram { overflow-x: auto !important; }
+  .mg-diagram img { min-width: 760px; }
 }
 
 @media (max-width: 560px) {
@@ -298,4 +308,13 @@ img, svg { max-width: 100%; }
   .mg-readings { grid-template-columns: 1fr !important; }
   /* Stack the big pull-quote mark above its text. */
   .mg-quote { grid-template-columns: 1fr !important; gap: 8px !important; }
+
+  /* Console log lines: tighter columns so the message keeps real width. */
+  .mg-log-line { grid-template-columns: 76px 44px 1fr !important; gap: 8px !important; font-size: 11px; }
+
+  /* Timeline steps: narrow time gutter on phones. */
+  .mg-tl-step { grid-template-columns: 64px 18px 1fr !important; gap: 12px !important; }
+
+  /* Demo preview beats: compact time/keyword gutters. */
+  .mg-beat { grid-template-columns: 58px 64px 1fr !important; gap: 8px !important; }
 }

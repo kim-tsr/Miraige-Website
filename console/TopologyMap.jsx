@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* TopologyMap — the central network canvas. */
+/* TopologyMap - the central network canvas. */
 
 const NodeIcon = ({ kind, color, size = 36 }) => {
   const stroke = color || "currentColor";
@@ -126,20 +126,20 @@ const TopologyMap = ({ phase = "idle" }) => {
   // Static-ish coordinates inside an absolutely-positioned canvas.
   // Keeping all positions here so the layout is data-driven.
   const N = {
-    client:     { x: 80,  y: 140, kind: "host",         label: "client",          sub: "203.0.113.41", color: "var(--sand-100)" },
-    attacker:   { x: 80,  y: 320, kind: "host",         label: "attaquant",       sub: "198.51.100.7", color: attackActive ? "var(--signal-alert)" : "var(--sand-400)" },
-    vrack:      { x: 320, y: 230, kind: "vrack",        label: "octavia-lb-001",  sub: diverted ? "L7 → Ghost Net" : "load balancer · vrack 3201", color: diverted ? "var(--signal-ghost)" : "var(--sand-100)" },
-    orch:       { x: 540, y: 230, kind: "orchestrator", label: "orchestrator-1",  sub: "A2A · live",    color: "var(--mirage-300)" },
-    obs1:       { x: 540, y: 80,  kind: "observer",     label: "observer-1",      sub: "edge mirror",   color: "var(--sand-100)" },
-    obs3:       { x: 720, y: 80,  kind: "observer",     label: "observer-3",      sub: detecting || diverted ? "score 0.93" : "idle", color: detecting || diverted ? "var(--signal-watch)" : "var(--sand-400)" },
-    prod:       { x: 780, y: 230, kind: "vrack",        label: "vrack-3210",      sub: diverted ? "10.42.7.0/24 · intacte" : "10.42.7.0/24 · prod", color: diverted ? "var(--signal-ok)" : "var(--sand-100)" },
-    ghost:      { x: 780, y: 400, kind: "ghost",        label: "gn-0094",         sub: ghostLive ? "Ghost Net · live" : "Ghost Net · armé", color: "var(--signal-ghost)" },
+    client:     { x: 80,  y: 140, kind: "host",         label: "client",          sub: "trafic légitime", color: "var(--sand-100)" },
+    attacker:   { x: 80,  y: 320, kind: "host",         label: "attaquant",       sub: "agent IA", color: attackActive ? "var(--signal-alert)" : "var(--sand-400)" },
+    vrack:      { x: 320, y: 230, kind: "vrack",        label: "octavia-lb",      sub: diverted ? "L7 → ghost shell" : "load balancer L7", color: diverted ? "var(--signal-ghost)" : "var(--sand-100)" },
+    orch:       { x: 540, y: 230, kind: "orchestrator", label: "orchestrator",    sub: "A2A · live",    color: "var(--mirage-300)" },
+    obs1:       { x: 540, y: 80,  kind: "observer",     label: "sentinel",        sub: "miroir des logs",   color: "var(--sand-100)" },
+    obs3:       { x: 720, y: 80,  kind: "observer",     label: "détection",       sub: detecting || diverted ? "score 0.93" : "idle", color: detecting || diverted ? "var(--signal-watch)" : "var(--sand-400)" },
+    prod:       { x: 780, y: 230, kind: "vrack",        label: "production",      sub: diverted ? "réseau privé · intacte" : "réseau privé · prod", color: diverted ? "var(--signal-ok)" : "var(--sand-100)" },
+    ghost:      { x: 780, y: 400, kind: "ghost",        label: "ghost-shell",     sub: ghostLive ? "leurre · live" : "leurre · armé", color: "var(--signal-ghost)" },
   };
 
   const statePill = !attackActive
-    ? <StatusPill kind="mirage" pulse>A2A · 9 agents</StatusPill>
+    ? <StatusPill kind="mirage" pulse>A2A · système nominal</StatusPill>
     : ghostLive
-      ? <StatusPill kind="ghost" pulse>Trafic dérouté → Ghost Net</StatusPill>
+      ? <StatusPill kind="ghost" pulse>Trafic dérouté → ghost shell</StatusPill>
       : diverted
         ? <StatusPill kind="ghost" pulse>L7 PATCH en cours…</StatusPill>
         : <StatusPill kind="alert" pulse>Attaque · {phase === "recon" ? "recon" : "détection"}</StatusPill>;
@@ -159,7 +159,7 @@ const TopologyMap = ({ phase = "idle" }) => {
     >
       {/* eyebrow */}
       <div style={{ position: "absolute", left: 20, top: 16, zIndex: 4 }}>
-        <Eyebrow color="var(--sand-400)">Topology · live · octavia LB → vrack 3210</Eyebrow>
+        <Eyebrow color="var(--sand-400)">Topology · live · octavia LB → production</Eyebrow>
       </div>
       <div style={{ position: "absolute", right: 20, top: 16, zIndex: 4 }}>
         {statePill}
@@ -186,7 +186,7 @@ const TopologyMap = ({ phase = "idle" }) => {
       {/* ── the LB's routing decision ──
            before reroute: LB forwards the attacker to the REAL site (red dots
            over the green link). after reroute: same LB now forwards to the
-           Ghost Net instead — no new attacker→ghost line, the path stays
+           Ghost Net instead - no new attacker→ghost line, the path stays
            attacker → LB → destination. */}
       {attackActive && !diverted && (
         <Edge from={N.vrack} to={N.prod} color="transparent" packets={3} packetColor="var(--signal-alert)" speed={1.6}/>

@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-/* ConsoleSnippet — a mini live-log card to give a flavor of the product. */
+/* ConsoleSnippet - a mini live-log card to give a flavor of the product. */
 
 const SnippetLine = ({ ts, level, body, hi, color }) => (
-  <div style={{
+  <div className="mg-log-line" style={{
     display: "grid", gridTemplateColumns: "108px 56px 1fr",
     gap: 12, padding: "5px 16px",
     borderLeft: `2px solid ${hi ? color : "transparent"}`,
@@ -18,7 +18,7 @@ const ConsoleSnippet = () => (
   <section
     className="mg-pad"
     style={{
-      padding: "0 48px 120px", maxWidth: 1280, margin: "0 auto",
+      padding: "0 48px 88px", maxWidth: 1280, margin: "0 auto",
     }}
   >
     <div className="mg-stack-tight" style={{
@@ -39,11 +39,11 @@ const ConsoleSnippet = () => (
           fontSize: 28, color: "var(--sand-100)", letterSpacing: "0.02em",
           lineHeight: 1.15,
         }}>
-          Le SOC voit tout.<br/>Et n'a rien à faire.
+          Le SOC voit tout.<br/>Sans urgence à traiter.
         </h3>
         <p style={{ margin: 0, fontSize: 13.5, color: "var(--sand-300)", lineHeight: 1.55 }}>
-          Le log est la seule trace de l'incident. Aucun ticket ouvert, aucun humain
-          réveillé : la rotation est terminée avant que la première alerte n'arrive.
+          La rotation est terminée avant que la première alerte n'arrive : le SOC
+          garde la main, mais sans réveil en pleine nuit. Le log est la trace, pas l'urgence.
         </p>
         <div style={{
           marginTop: 28,
@@ -51,9 +51,9 @@ const ConsoleSnippet = () => (
           color: "var(--sand-400)", letterSpacing: "0.04em",
           display: "flex", flexDirection: "column", gap: 6,
         }}>
-          <span><span style={{ color: "var(--signal-ok)" }}>●</span>&nbsp;&nbsp;orchestrator-1 · healthy</span>
-          <span><span style={{ color: "var(--signal-watch)" }}>●</span>&nbsp;&nbsp;observer-3 · scoring</span>
-          <span><span style={{ color: "var(--signal-ghost)" }}>●</span>&nbsp;&nbsp;gn-0094 · live</span>
+          <span><span style={{ color: "var(--signal-ok)" }}>●</span>&nbsp;&nbsp;orchestrator · healthy</span>
+          <span><span style={{ color: "var(--signal-watch)" }}>●</span>&nbsp;&nbsp;observer · scoring</span>
+          <span><span style={{ color: "var(--signal-ghost)" }}>●</span>&nbsp;&nbsp;ghost-shell · live</span>
         </div>
       </aside>
       <div style={{
@@ -61,9 +61,9 @@ const ConsoleSnippet = () => (
         lineHeight: 1.7, padding: "20px 0", color: "var(--sand-100)",
       }}>
         <SnippetLine ts="19:42:08.110" level="OK" color="var(--signal-ok)"
-          body={<>route <span style={{color:"var(--mirage-300)"}}>10.42.0.0/24</span> → <span style={{color:"var(--mirage-300)"}}>vrack-3201</span></>}/>
+          body={<>route <span style={{color:"var(--mirage-300)"}}>trafic légitime</span> → <span style={{color:"var(--mirage-300)"}}>pool production</span></>}/>
         <SnippetLine ts="19:42:08.412" level="WATCH" color="var(--signal-watch)"
-          body={<>sentinel-1 recon cumulé score=<span style={{color:"var(--mirage-300)"}}>0.94</span> kind=<span style={{color:"var(--signal-watch)"}}>ai-recon</span></>}/>
+          body={<>sentinel recon cumulé score=<span style={{color:"var(--mirage-300)"}}>0.93</span> kind=<span style={{color:"var(--signal-watch)"}}>ai-recon</span></>}/>
         <SnippetLine ts="19:42:08.711" level="ALERT" color="var(--signal-alert)" hi
           body={<>canary PI hit <span style={{color:"var(--signal-alert)"}}>/admin/acknowledge</span> · agent LLM confirmé</>}/>
         <SnippetLine ts="19:42:09.611" level="ALERT" color="var(--signal-alert)" hi

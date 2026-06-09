@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* IncidentDetail — right rail inspector + demo driver (launch → reroute). */
+/* IncidentDetail - right rail inspector + demo driver (launch → reroute). */
 
 const KeyVal = ({ k, v, mono = true }) => (
   <div
@@ -56,7 +56,7 @@ const fmtInt = (n) => Math.round(n).toLocaleString("fr-FR").replace(/ /g, " "
 const IncidentDetail = ({ incident, phase, phaseOrder, phaseLabel, metrics, spark, running, onLaunch, onReset }) => {
   const idle = phase === "idle";
   const engaged = phase === "engaged";
-  const confidence = metrics.confidence > 0 ? metrics.confidence.toFixed(2) : "—";
+  const confidence = metrics.confidence > 0 ? metrics.confidence.toFixed(2) : "-";
   const headline = idle
     ? "Aucun incident. Lancez la démo pour simuler une attaque agentique en temps réel."
     : engaged
@@ -97,7 +97,7 @@ const IncidentDetail = ({ incident, phase, phaseOrder, phaseLabel, metrics, spar
               fontSize: 26, color: "var(--sand-100)", letterSpacing: "0.02em",
             }}
           >
-            {idle ? "—" : incident.id}
+            {idle ? "-" : incident.id}
           </span>
           <StatusPill kind={engaged ? "ghost" : idle ? "mirage" : "alert"} pulse={!idle && !engaged}>
             {idle ? "En veille" : engaged ? "Contenu" : phaseLabel[phase]}
@@ -115,15 +115,15 @@ const IncidentDetail = ({ incident, phase, phaseOrder, phaseLabel, metrics, spar
       </header>
 
       <div style={{ padding: "12px 18px" }}>
-        <KeyVal k="vector"     v={idle ? "—" : "ai-recon"}/>
+        <KeyVal k="vector"     v={idle ? "-" : "ai-recon"}/>
         <KeyVal k="source"     v="198.51.100.7"/>
         <KeyVal k="req / 10s"  v={<span style={{ color: metrics.rps > 20 ? "var(--signal-watch)" : "var(--sand-100)" }}>{fmtInt(metrics.rps)}</span>}/>
-        <KeyVal k="confidence" v={<span style={{ color: metrics.confidence >= 0.9 ? "var(--signal-alert)" : "var(--sand-100)" }}>{confidence}{confidence !== "—" ? " · Llama-3.1-8B" : ""}</span>}/>
+        <KeyVal k="confidence" v={<span style={{ color: metrics.confidence >= 0.9 ? "var(--signal-alert)" : "var(--sand-100)" }}>{confidence}{confidence !== "-" ? " · Llama-3.1-8B" : ""}</span>}/>
         <KeyVal k="latence"    v={metrics.latency}/>
         <KeyVal k="session"    v={metrics.session}/>
         <KeyVal k="ratio"      v={engaged
           ? <span style={{ color: "var(--signal-ghost)" }}>{metrics.ratio.toFixed(1)}× <span style={{ color: "var(--sand-400)" }}>(honnête 5–50×)</span></span>
-          : "—"}/>
+          : "-"}/>
       </div>
 
       <div

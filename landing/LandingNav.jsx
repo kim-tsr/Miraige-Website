@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-/* LandingNav — responsive: wordmark + contact + console redirect. */
+/* LandingNav - responsive: wordmark + contact + console redirect. */
 
 const LandingNav = () => (
   <nav className="mg-pad" style={{
@@ -29,7 +29,7 @@ const LandingNav = () => (
       <a href="/console/" style={{
         color: "var(--sand-50)", background: "var(--sand-900)",
         padding: "8px 14px", borderRadius: 4, textDecoration: "none",
-      }}>Console —&gt;</a>
+      }}>Console -&gt;</a>
     </div>
   </nav>
 );
